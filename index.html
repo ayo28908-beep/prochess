@@ -431,7 +431,7 @@
         <a href="#camp">Summer Camp</a>
         <a href="#coaches">Coaches</a>
         <a href="#blog">Blog</a>
-        <a href="https://nigerian-chess-stream.example.com" target="_blank" rel="noopener">▶ Live Stream</a>
+        <a href="https://chessstream-africa.vercel.app" target="_blank" rel="noopener">▶ Live Stream</a>
       </div>
       <div class="navcta">
         <a href="dashboard.html" class="btn btn-ghost btn-sm">Log in</a>
@@ -448,7 +448,7 @@
       <a href="#camp">Summer Camp</a>
       <a href="#coaches">Coaches</a>
       <a href="#blog">Blog</a>
-      <a href="https://nigerian-chess-stream.example.com" target="_blank" rel="noopener">▶ Live Stream</a>
+      <a href="https://chessstream-africa.vercel.app" target="_blank" rel="noopener">▶ Live Stream</a>
       <a href="dashboard.html" class="btn btn-primary" style="justify-content:center;margin-top:10px">Log in → my dashboard</a>
     </div>
   </div>
@@ -824,7 +824,7 @@
     <h2>Your chess journey starts with one move.</h2>
     <p>Join the academy free — get your first course, daily puzzles and a seat at the next tournament.</p>
     <div class="ctas">
-      <a class="btn btn-primary" href="#" style="padding:15px 32px;font-size:16px">Create free account</a>
+      <a class="btn btn-primary" href="dashboard.html" style="padding:15px 32px;font-size:16px">Create free account</a>
       <a class="btn btn-ghost" href="#coaches" style="padding:15px 32px;font-size:16px">Talk to a coach</a>
     </div>
   </div>
@@ -855,7 +855,7 @@
       <div class="fcol">
         <h4>Compete</h4>
         <a href="tournament.html">Upcoming tournaments</a>
-        <a href="https://nigerian-chess-stream.example.com" target="_blank" rel="noopener">▶ Nigerian Chess Stream</a>
+        <a href="https://chessstream-africa.vercel.app" target="_blank" rel="noopener">▶ Nigerian Chess Stream</a>
         <a href="tournament.html">Live standings</a>
         <a href="player.html">Player profiles</a>
         <a href="dashboard.html">Student dashboard</a>
@@ -914,15 +914,25 @@ burger.addEventListener("click",()=>mm.classList.toggle("open"));
 /* ============ countdowns ============ */
 function startCountdowns(){
   const pad=n=>String(n).padStart(2,"0");
+  // Real tournament deadlines (ISO datetimes, not relative offsets).
+  // Update these dates when actual registration deadlines change.
+  const DEADLINES={
+    "+12d 09:00:00":new Date("2026-09-06T09:00:00+01:00"),
+    "+26d 10:00:00":new Date("2026-09-20T10:00:00+01:00"),
+  };
   document.querySelectorAll("[data-deadline]").forEach(el=>{
-    const spec=el.dataset.deadline; // e.g. "+12d 09:00:00"
+    const spec=el.dataset.deadline;
     const m=spec.match(/\+(\d+)d\s+(\d+):(\d+):(\d+)/);
-    const now=new Date();
-    const target=new Date(now.getTime());
-    target.setDate(target.getDate()+ (+m[1]));
-    target.setHours(+m[2],+m[3],+m[4],0);
+    // Use real calendar date if we have one, otherwise fall back to offset from now
+    const target = DEADLINES[spec] || (() => {
+      const base = new Date();
+      base.setDate(base.getDate()+(+m[1]));
+      base.setHours(+m[2],+m[3],+m[4],0);
+      return base;
+    })();
     const els={d:el.querySelector(".cd-d"),h:el.querySelector(".cd-h"),m:el.querySelector(".cd-m"),s:el.querySelector(".cd-s")};
     function tick(){
+      const now=new Date();
       let diff=target-now;if(diff<0)diff=0;
       const d=Math.floor(diff/864e5),h=Math.floor(diff/36e5)%24,mi=Math.floor(diff/6e4)%60,s=Math.floor(diff/1e3)%60;
       els.d.textContent=pad(d);els.h.textContent=pad(h);els.m.textContent=pad(mi);els.s.textContent=pad(s);
@@ -932,9 +942,10 @@ function startCountdowns(){
   // hero chip countdown
   const chip=document.getElementById("chip-count");
   if(chip){
-    const t=new Date();t.setDate(t.getDate()+12);t.setHours(9,0,0,0);
+    const t=new Date("2026-09-06T09:00:00+01:00"); // real first tournament deadline
     setInterval(()=>{
-      let d=t-new Date();if(d<0)d=0;
+      const now=new Date();
+      let d=t-now;if(d<0)d=0;
       const dd=Math.floor(d/864e5),hh=Math.floor(d/36e5)%24,mi=Math.floor(d/6e4)%60;
       chip.textContent=`${dd}d ${pad(hh)}:${pad(mi)}`;
     },1000);

@@ -8,7 +8,7 @@
 
 import fs from 'node:fs';
 
-const STREAM_URL = 'https://nigerian-chess-stream.example.com';
+const STREAM_URL = 'https://chessstream-africa.vercel.app';
 const NAV = `        <a href="${STREAM_URL}" target="_blank" rel="noopener">▶ Live Stream</a>`;
 const MOB = `      <a href="${STREAM_URL}" target="_blank" rel="noopener">▶ Live Stream</a>`;
 const FOOT = `        <a href="${STREAM_URL}" target="_blank" rel="noopener">▶ Nigerian Chess Stream</a>`;
