@@ -1,0 +1,46 @@
+@font-face{font-family:OpenSans;src:url(OpenSans-Regular.ttf);font-weight:normal}@font-face{font-family:OpenSans;src:url(OpenSans-Light.ttf);font-weight:300}
+@font-face{font-family:OpenSans-Condensed;src:url(OpenSans-CondLight.ttf);font-weight:300}.lc-button,.lc-link{display:flex;text-align:center;align-items:baseline;justify-content:center}
+.lc-button a:link,.lc-button a:visited,.lc-button a:hover,.lc-link a:link,.lc-link a:visited,.lc-link a:hover{color:inherit}.lc-icon{display:inline-block;width:1em;height:1em;stroke-width:0;stroke:currentColor;fill:currentColor}
+.lc-numberlist{display:flex;flex-direction:row;justify-content:center;align-content:stretch;border:1px solid #d3d5d7;cursor:pointer}.lc-numberlist>.nr{flex:1;text-align:center;flex:1 0}
+.lc-numberlist>.selected{background-color:#4d6f94;color:white}@font-face{font-family:Chess-Merida-Unicode;src:url(Chess-Merida-Unicode.ttf)}
+.lc-figurine{font-family:Chess-Merida-Unicode;font-weight:normal}.lc-shade{position:fixed;width:100%;height:100%;top:0;left:0;visibility:hidden;opacity:0;z-index:50;-webkit-transition:opacity 1s;transition:opacity 1s}
+.show ~ .lc-shade{visibility:visible;opacity:.35;background-color:black}.lc-col-inline{display:flex;flex-direction:column;flex-basis:auto;flex-shrink:0}
+.lc-movelist{font-family:OpenSans-Condensed,sans-serif;font-weight:normal;background-color:#81898c;color:white;display:flex}.lc-movelist>.title{background-color:#eff8fd;color:#003558}
+.lc-movelist>.title>div{display:flex;flex-direction:row;align-items:baseline;flex-shrink:0;padding:.5ex}.lc-movelist>.list{position:relative;-webkit-user-select:text;user-select:text;color:#d3d5d7;flex-grow:1}
+.lc-movelist>.list>.scroll{position:absolute}.lc-movelist>.list .item{display:flex;flex-direction:row;align-items:baseline}.lc-movelist>.list .item .selected{font-weight:bold;color:white}
+.lc-gameviewer{position:relative;width:100%;height:100%;font-family:OpenSans,sans-serif;font-stretch:normal;font-weight:300;line-height:1.5;margin:0;cursor:default;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.lc-gameviewer>.top{background-color:#4d6f94;justify-content:space-between;color:white;box-shadow:0 .3ch 1ch #0b1014;z-index:100;align-items:center;display:flex;flex-direction:row;flex:0 0 auto}
+.lc-gameviewer>.top>.logo{background:orange url("powered.svg") no-repeat center center;background-size:80% 80%;width:4em;height:4em;flex:0 0 auto}
+.lc-gameviewer>.top>.menu{font-size:120%;display:flex;flex-direction:column;text-align:center;justify-content:space-around;align-items:center;align-self:center;white-space:nowrap;cursor:pointer;flex:0 1 auto;overflow:hidden}
+.lc-gameviewer>.top>.menu>.title{font-size:120%;font-weight:normal}.lc-gameviewer>.top>.menu>.names{font-size:80%;align-items:baseline;display:flex;flex-direction:row;flex-grow:1}
+.lc-gameviewer>.top>.menu>.names>.name{text-align:left;white-space:nowrap}.lc-gameviewer>.top>.menu>.names>.name-sep{font-size:60%;padding:0 1ex}
+.lc-gameviewer>.center{flex:1 0 30%;background-color:#3f5e79;display:flex;flex-direction:row;position:relative}.lc-gameviewer>.center>.board{flex:1 0 auto;align-content:stretch;margin:1em;position:relative}
+.lc-gameviewer>.bottom{white-space:nowrap;background-color:white;color:#b3b3b3;font-size:150%;line-height:1;display:flex;flex-direction:row;align-items:baseline;flex:0 0 1.4em}
+.lc-gameviewer>.bottom>*{flex-grow:1;padding:.2em 0}.lc-gameviewer.lc-landscape .lc-popup{width:70%;left:15%;max-height:80%}.lc-gameviewer.lc-landscape .lc-clock{padding:.5ex;text-align:center;min-height:1em;font-family:OpenSans-Condensed,sans-serif;font-weight:normal;font-size:200%}
+.lc-gameviewer.lc-landscape .lc-players{display:flex;align-items:stretch;flex-direction:column;justify-content:center;width:17ex}.lc-gameviewer.lc-landscape .lc-players>.black{flex-basis:50%;flex-grow:1;display:flex;color:white;background-color:#81898c;align-items:flex-end;justify-content:center}
+.lc-gameviewer.lc-landscape .lc-players>.white{flex-basis:50%;flex-grow:1;display:flex;color:#003558;background-color:#eff8fd;align-items:flex-start;justify-content:center}
+.lc-gameviewer.lc-landscape .lc-movelist{flex-direction:column;width:17ex}.lc-gameviewer.lc-landscape .lc-movelist .item:not(:last-child){border-bottom:1px solid #d3d5d7}
+.lc-gameviewer.lc-landscape .lc-movelist .list{overflow-x:hidden;overflow-y:auto}.lc-gameviewer.lc-landscape .lc-movelist .list>.scroll{width:100%}
+.lc-gameviewer.lc-landscape .lc-movelist .list .item{padding:.5ex}.lc-gameviewer.lc-landscape .lc-movelist .column-nr{flex-basis:20%;text-align:center}
+.lc-gameviewer.lc-landscape .lc-movelist .column-san{flex-basis:40%;text-align:center}.lc-gameviewer.lc-landscape .lc-movelist>.foot{border-top:1px solid #d3d5d7;padding:.5ex}
+.lc-gameviewer.lc-landscape .lc-movelist>.foot>.comment{padding:1ex 1ex 0;text-align:center}.lc-gameviewer.lc-landscape .lc-movelist>.foot>.result{font-size:200%;padding:.5ch;text-align:center}
+.lc-gameviewer.lc-landscape>.center{flex-direction:row}.lc-gameviewer.lc-landscape .subtitle{font-size:80%;display:flex;align-items:flex-end;flex-direction:column;width:4em;white-space:nowrap;padding-right:1ex;flex:0 0 auto}
+.lc-gameviewer.lc-portrait{font-size:125%}.lc-gameviewer.lc-portrait .lc-popup{width:92%;left:2%;max-height:95%}.lc-gameviewer.lc-portrait .lc-players{display:flex;align-items:stretch;flex-direction:column;font-family:OpenSans-Condensed,sans-serif;font-weight:normal}
+.lc-gameviewer.lc-portrait .lc-players>.black,.lc-gameviewer.lc-portrait .lc-players .white{flex-basis:50%;flex-grow:1;display:flex;justify-content:space-between;align-items:center;padding:.5ex;text-overflow:ellipsis;min-height:1.5em}
+.lc-gameviewer.lc-portrait .lc-players>.black{color:white;background-color:#81898c}.lc-gameviewer.lc-portrait .lc-players>.white{color:#003558;background-color:#eff8fd}
+.lc-gameviewer.lc-portrait .lc-clock{flex-shrink:0}.lc-gameviewer.lc-portrait>.center{flex-direction:column}.lc-gameviewer.lc-portrait .lc-players{width:100%}
+.lc-gameviewer.lc-portrait .lc-movelist{flex-direction:row;padding:.5ex;font-size:150%;flex:0 0 auto}.lc-gameviewer.lc-portrait .lc-movelist .list{overflow-x:auto;overflow-y:hidden;flex-direction:row;align-items:baseline;flex-grow:1;min-height:1.5em}
+.lc-gameviewer.lc-portrait .lc-movelist .list>.scroll{display:flex;flex-direction:row;align-items:baseline}.lc-gameviewer.lc-portrait .lc-movelist .list .item{flex-shrink:0;flex-grow:1}
+.lc-gameviewer.lc-portrait .lc-movelist .list .column-san,.lc-gameviewer.lc-portrait .lc-movelist .list .column-nr{margin:0 .5ex;flex-shrink:0;flex-grow:1}
+.lc-gameviewer.lc-portrait .lc-movelist .title{display:none}.lc-gameviewer.lc-portrait .lc-movelist .foot{flex-shrink:0;margin-left:.5ex}
+.lc-gameviewer.lc-portrait .menu .subtitle{display:flex;flex-direction:row;font-size:80%}.lc-gameviewer.lc-portrait .menu .subtitle *{padding:0 .5ex}
+.lc-gameviewer .lc-popup{position:absolute;top:0;visibility:hidden;height:0;background-color:#eff8fd;font-family:OpenSans-Condensed;opacity:.95;z-index:100;padding:.5em;-webkit-transition:all .5s;transition:all .5s}
+.lc-gameviewer .lc-popup.show{visibility:visible;height:80%;box-shadow:0 .3ex 1ex #0b1014}.lc-gameviewer .lc-popup>div{position:relative;width:100%;height:100%;overflow:hidden}
+.lc-gameviewer.flip .lc-players>.black{order:2}.lc-gameviewer.flip .lc-players>.white{order:1}.lc-gameviewer.flip.lc-landscape .lc-players>.black{align-items:flex-start}
+.lc-gameviewer.flip.lc-landscape .lc-players>.white{align-items:flex-end}.lc-menu{display:flex;flex-direction:column;height:100%}.lc-menu>.row{display:flex;flex-direction:row;align-items:baseline;justify-content:center;flex:0 0 auto}
+.lc-menu>.row>.label{margin-right:1ex}.lc-menu>.row>.lc-numberlist{flex:0 0 50%}.lc-menu>.games{margin-top:1ex;flex:1 0 auto;display:flex;flex-direction:column}
+.lc-menu>.games>.title{font-weight:bold;flex:0 0 auto}.lc-menu>.games>.title>div{display:flex;flex-direction:row;justify-content:space-between}
+.lc-menu>.games>.body{flex:1 0 auto;position:relative;overflow-y:scroll;overflow-x:hidden}.lc-menu>.games>.body>.scroll{position:absolute;width:100%}
+.lc-menu>.games>.body>.scroll>.item{display:flex;flex-direction:row;justify-content:space-between;cursor:pointer}.lc-menu>.games>.body>.scroll>.item.selected{background-color:#4d6f94;color:white}
+.lc-menu>.games .nr{flex-basis:10%;text-align:center}.lc-menu>.games .player{flex-basis:30%;overflow:hidden;text-align:left;white-space:nowrap;text-overflow:ellipsis}
+.lc-menu>.games .result{flex-basis:15%;text-align:center}

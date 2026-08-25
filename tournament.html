@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Tournament — Prochess</title>
+<meta name="description" content="Live standings, pairings and results for Prochess tournaments.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♞</text></svg>">
+<style>
+  :root{
+    --bg:#070b12;--bg2:#0b1120;--surface:#111a2c;--surface2:#16213a;
+    --line:rgba(148,180,255,.10);--line2:rgba(148,180,255,.18);
+    --text:#eaf1fb;--muted:#93a5c0;--green:#22c55e;--green2:#16a34a;
+    --gold:#f5b93f;--red:#f87171;--blue:#60a5fa;
+    --radius:18px;--shadow:0 20px 60px rgba(0,0,0,.45);
+    --font:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --piece:"Segoe UI Symbol","Arial Unicode MS","DejaVu Sans",serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth;overflow-x:hidden}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.55;overflow-x:hidden}
+  ::selection{background:rgba(34,197,94,.35)}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  .piece{font-family:var(--piece)}
+
+  /* nav */
+  header{position:sticky;top:0;z-index:100;background:rgba(7,11,18,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:68px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:21px;letter-spacing:-.3px}
+  .logo .mark{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:22px;color:#fff;background:linear-gradient(135deg,var(--green2),var(--green));box-shadow:0 6px 20px rgba(34,197,94,.35)}
+  .logo b{color:var(--green)}
+  .navlinks{display:flex;align-items:center;gap:24px;font-size:14px;font-weight:600;color:var(--muted)}
+  .navlinks a:hover{color:#fff}
+  .navlinks a.on{color:var(--green)}
+  .navcta{display:flex;align-items:center;gap:12px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;border:1px solid transparent;transition:transform .15s,box-shadow .2s,background .2s;white-space:nowrap}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:linear-gradient(135deg,var(--green2),var(--green));color:#04110a;box-shadow:0 8px 24px rgba(34,197,94,.35)}
+  .btn-primary:hover{transform:translateY(-2px)}
+  .btn-ghost{border-color:var(--line2);color:var(--text);background:rgba(255,255,255,.03)}
+  .btn-ghost:hover{background:rgba(255,255,255,.08);transform:translateY(-2px)}
+  .btn-sm{padding:8px 16px;font-size:13px;border-radius:10px}
+  .burger{display:none;background:none;border:1px solid var(--line2);border-radius:10px;width:40px;height:40px;color:#fff;font-size:18px;cursor:pointer}
+  .mobilemenu{display:none;flex-direction:column;padding:12px 0 18px;border-top:1px solid var(--line)}
+  .mobilemenu a{padding:13px 6px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line)}
+  .mobilemenu.open{display:flex}
+
+  /* hero */
+  .thero{position:relative;padding:64px 0 46px;overflow:hidden;background:
+    radial-gradient(800px 420px at 85% -10%,rgba(34,197,94,.13),transparent 60%),
+    radial-gradient(600px 420px at -5% 40%,rgba(37,99,235,.1),transparent 60%),var(--bg)}
+  .thero::before{content:"";position:absolute;inset:0;opacity:.45;pointer-events:none;background-image:linear-gradient(rgba(148,180,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(148,180,255,.045) 1px,transparent 1px);background-size:52px 52px}
+  .breadcrumb{display:flex;gap:8px;align-items:center;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:20px;position:relative;z-index:1}
+  .breadcrumb a{color:var(--green)}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--green);background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);padding:7px 14px;border-radius:99px;margin-bottom:16px;position:relative;z-index:1}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
+  .thero h1{font-size:clamp(26px,3.6vw,42px);font-weight:900;letter-spacing:-1px;line-height:1.12;margin-bottom:12px;position:relative;z-index:1}
+  .thero .venue{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:15px;margin-bottom:26px;position:relative;z-index:1}
+  .chips{display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:1}
+  .chip{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 18px;min-width:130px}
+  .chip .ci{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:18px;flex:none}
+  .chip b{display:block;font-size:14.5px;color:#fff;line-height:1.2}
+  .chip span{font-size:11px;color:var(--muted);font-weight:600}
+  .chip .live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:900;color:#86efac;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.4);padding:5px 12px;border-radius:99px;margin-left:4px}
+  .chip .live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.2s infinite}
+
+  /* layout */
+  main{padding:34px 0 90px}
+  .cols{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:30px;align-items:start}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;margin-bottom:28px}
+  .panel h2{font-size:19px;font-weight:800;display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  .panel h2 .n{color:var(--green)}
+
+  /* round tabs */
+  .rtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+  .rtab{min-width:44px;padding:9px 14px;border-radius:11px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
+  .rtab:hover{color:#fff;border-color:var(--line2)}
+  .rtab.on{background:var(--green);color:#04110a;border-color:var(--green);box-shadow:0 4px 16px rgba(34,197,94,.35)}
+  .rtab .st{display:block;font-size:9.5px;letter-spacing:1px;opacity:.75;text-transform:uppercase}
+  .rtab.on .st{color:#052e16}
+
+  /* pairings */
+  .board{display:grid;grid-template-columns:minmax(0,1fr) 92px minmax(0,1fr);gap:12px;align-items:center;padding:14px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);margin-bottom:10px;transition:border-color .25s,transform .2s;position:relative}
+  .board:hover{border-color:rgba(34,197,94,.4);transform:translateX(3px)}
+  .board.live{border-color:rgba(34,197,94,.55);background:linear-gradient(90deg,rgba(34,197,94,.07),var(--surface2) 40%)}
+  .side{display:flex;align-items:center;gap:10px;min-width:0}
+  .side.b{flex-direction:row-reverse;text-align:right}
+  .av{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:var(--piece);font-size:18px;background:rgba(148,180,255,.08);border:1px solid var(--line);flex:none;color:#c9d6e8}
+  .side.b .av{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.25);color:#6ee7a0}
+  .nmwrap{min-width:0}
+  .nmwrap .nm{display:block;font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nmwrap .nm:hover{color:var(--green)}
+  .nmwrap .rt{display:block;font-size:11px;color:var(--muted);margin-top:2px;font-weight:600}
+  .tl{display:inline-block;font-size:9.5px;font-weight:900;color:#0a1428;background:var(--gold);border-radius:6px;padding:1.5px 6px;margin-left:6px;vertical-align:2px}
+  .mid{text-align:center}
+  .res{display:inline-block;font-size:13.5px;font-weight:900;padding:7px 12px;border-radius:10px;background:rgba(148,180,255,.08);border:1px solid var(--line);color:var(--muted);min-width:44px}
+  .res.w{color:#0a1428;background:var(--green);border-color:var(--green)}
+  .res.b{color:#0a1428;background:var(--gold);border-color:var(--gold)}
+  .res.d{color:var(--text);background:rgba(148,180,255,.1);border-color:var(--line2)}
+  .livepill{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900;color:#86efac;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.4);padding:4px 10px;border-radius:99px;letter-spacing:.8px;text-transform:uppercase}
+  .livepill .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.2s infinite}
+  .bnum{position:absolute;top:-8px;left:14px;font-size:10px;font-weight:900;color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:2px 8px;border-radius:99px}
+
+  /* standings */
+  .stwrap{overflow-x:auto}
+  table.st{width:100%;border-collapse:collapse;font-size:13.5px;min-width:340px}
+  .st th{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 8px;border-bottom:1px solid var(--line2);font-weight:800}
+  .st td{padding:10px 8px;border-bottom:1px solid var(--line)}
+  .st tr:last-child td{border-bottom:none}
+  .st tbody tr{transition:background .2s}
+  .st tbody tr:hover{background:rgba(255,255,255,.03)}
+  .st .rk{font-weight:900;width:34px;color:var(--muted)}
+  .st .rk.m1{color:var(--gold)} .st .rk.m2{color:#cbd5e1} .st .rk.m3{color:#d97706}
+  .st .pname{font-weight:700;white-space:nowrap}
+  .st .pname a{color:inherit}
+  .st .pname a:hover{color:var(--green);text-decoration:underline}
+  .st .rate{color:#c9d6e8;font-weight:800}
+  .st .rate .none{color:#5a6b85;font-weight:600}
+  .st .del{font-weight:900;font-size:12.5px}
+  .st .del.up{color:var(--green)}
+  .st .del.down{color:var(--red)}
+  .st .del.flat{color:var(--muted)}
+  .st .livepl{color:#6ee7a0}
+  .fide-link{font-size:10px;color:var(--muted);vertical-align:1px;text-decoration:none!important}
+  .st .pts{font-weight:900;color:#fff}
+  .st .pts i{font-style:normal;color:var(--green)}
+  .st .sm{color:var(--muted);font-size:12px}
+  .st .t1{color:var(--gold);font-size:16px}
+  .medal{font-size:15px}
+
+  .players{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .pl{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:9px 12px;font-size:13px}
+  .pl .av{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-family:var(--piece);font-size:16px;flex:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#6ee7a0}
+  .pl b{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pl b a{color:inherit}
+  .pl b a:hover{color:var(--green)}
+  .pl span{color:var(--muted);font-size:11.5px;display:block}
+
+  /* live board */
+  .liveboard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .lb-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:20px 26px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .lb-head h2{font-size:19px;font-weight:800;display:flex;align-items:center;gap:10px}
+  .lb-head .hint{font-size:12.5px;color:var(--muted)}
+  .lb-frame{position:relative;width:100%;height:600px;background:#0b1120}
+  .lb-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .lbfull{padding:22px 26px;border-top:1px solid var(--line);display:flex;justify-content:center}
+
+  /* footer */
+  footer{background:#05080e;border-top:1px solid var(--line);padding:40px 0 30px}
+  .fgrid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:36px;margin-bottom:40px}
+  .fcol h4{font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#fff;margin-bottom:14px}
+  .fcol a{display:block;color:#5a6b85;font-size:13.5px;padding:5px 0;transition:color .2s}
+  .fcol a:hover{color:var(--green)}
+  .fcol p{color:#5a6b85;font-size:13.5px;margin:12px 0 0;max-width:280px}
+  @media (max-width:760px){.fgrid{grid-template-columns:1fr 1fr}}
+  .fbar{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;color:#5a6b85;font-size:13px}
+  .fbar b{color:var(--muted)}
+  .fbar a{color:var(--green)}
+
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  .d1{transition-delay:.08s}.d2{transition-delay:.16s}
+
+  @media (max-width:1024px){
+    .cols{grid-template-columns:minmax(0,1fr)}
+  }
+  @media (max-width:760px){
+    .navlinks,.navcta .btn{display:none}
+    .burger{display:block}
+    .board{grid-template-columns:minmax(0,1fr) 74px minmax(0,1fr);gap:8px;padding:12px 10px}
+    .players{grid-template-columns:1fr}
+    .lb-frame{height:460px}
+    .chips{gap:8px}
+    .chip{min-width:0;flex:1 1 calc(50% - 8px)}
+    .navcta .btn-ghost{display:none}
+  }
+  @media (max-width:420px){
+    .chip{flex:1 1 100%}
+    .st .pname,.st .sm{font-size:12px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="nav">
+      <a class="logo" href="index.html"><img src="prochess-logo.png" alt="PROCHESS" style="width:40px;height:40px;border-radius:12px;object-fit:contain;background:#fff;padding:3px;box-shadow:0 6px 20px rgba(0,0,0,.45)">Pro<b>chess</b></a>
+      <div class="navlinks" id="navlinks">
+        <a href="index.html">Home</a>
+        <a href="index.html#academy">Academy</a>
+        <a href="index.html#puzzles">Puzzles</a>
+        <a href="tournament.html" class="on">Tournaments</a>
+        <a href="player.html">Players</a>
+        <a href="index.html#camp">Summer Camp</a>
+        <a href="index.html#blog">Blog</a>
+        <a href="https://nigerian-chess-stream.example.com" target="_blank" rel="noopener">▶ Live Stream</a>
+      </div>
+      <div class="navcta">
+        <a href="dashboard.html" class="btn btn-ghost btn-sm">Log in</a>
+        <a href="index.html#join" class="btn btn-primary btn-sm">Join Free</a>
+        <button class="burger" id="burger" aria-label="Menu">☰</button>
+      </div>
+    </nav>
+    <div class="mobilemenu" id="mobilemenu">
+      <a href="index.html">Home</a>
+      <a href="index.html#academy">Academy</a>
+      <a href="index.html#puzzles">Puzzles</a>
+      <a href="tournament.html">Tournaments</a>
+      <a href="player.html">Players</a>
+      <a href="index.html#camp">Summer Camp</a>
+      <a href="index.html#blog">Blog</a>
+      <a href="https://nigerian-chess-stream.example.com" target="_blank" rel="noopener">▶ Live Stream</a>
+    </div>
+  </div>
+</header>
+
+<section class="thero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Home</a> › <span>Live tournament</span></div>
+    <span class="eyebrow"><span class="dot"></span> <span id="t-status">In progress</span></span>
+    <h1 id="t-name"></h1>
+    <div class="venue">📍 <span id="t-venue"></span></div>
+    <div class="chips">
+      <div class="chip"><span class="ci" style="background:rgba(96,165,250,.14);color:var(--blue)">⏱</span><div><b id="t-time"></b><span>Time control</span></div></div>
+      <div class="chip"><span class="ci" style="background:rgba(245,185,63,.14);color:var(--gold)">💰</span><div><b id="t-prize"></b><span>Prize pool</span></div></div>
+      <div class="chip"><span class="ci" style="background:rgba(34,197,94,.14);color:var(--green)">♟</span><div><b id="t-players"></b><span>Players</span></div></div>
+      <div class="chip"><span class="ci" style="background:rgba(248,113,113,.14);color:var(--red)">♜</span><div><b id="t-rounds"></b><span>Rounds</span></div></div>
+      <div class="chip"><span class="ci" style="background:rgba(34,197,94,.14);color:var(--green)">🟢</span><div><b id="t-games"></b><span>Games completed</span><span class="live" id="t-live"></span></div></div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="wrap cols">
+
+    <!-- LEFT: rounds & pairings -->
+    <div>
+      <div class="panel reveal in">
+        <h2><span class="n">♞</span> Pairings &amp; results</h2>
+        <div class="rtabs" id="rtabs"></div>
+        <div id="pairings"></div>
+      </div>
+      <div class="panel reveal" id="livepanel">
+        <div class="liveboard">
+          <div class="lb-head">
+            <h2>🔴 <span>Live board — Round <span id="lb-round">10</span></span></h2>
+            <span class="hint">Powered by the Prochess live engine · auto-refreshes</span>
+          </div>
+          <div class="lb-frame">
+            <iframe id="lbframe" src="tournaments/olympiad-qualifiers/index.html" loading="lazy" title="Live chess board"></iframe>
+          </div>
+          <div class="lbfull">
+            <a class="btn btn-primary" href="tournaments/olympiad-qualifiers/index.html" target="_blank" rel="noopener">Open fullscreen viewer ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: standings & players -->
+    <div>
+      <div class="panel reveal">
+        <h2>🏆 <span>Live standings</span></h2>
+        <div class="stwrap"><table class="st" id="standings"></table></div>
+        <p style="font-size:11.5px;color:var(--muted);margin-top:12px">Tiebreak: Buchholz · <b style="color:var(--muted)">Perf</b> = performance rating (avg opponent rating + dp) · <b style="color:var(--muted)">Δ</b> = estimated rating change (K × Σ(score − expected), FIDE regs 8.1–8.3; Aug 2026 ratings as event ratings; pending games not counted). Click a name for the full player profile.</p>
+      </div>
+      <div class="panel reveal d1">
+        <h2>🎖 <span>Registered players</span></h2>
+        <div class="players" id="players"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div class="fcol">
+        <a class="logo" href="index.html"><img src="prochess-logo.png" alt="PROCHESS" style="width:40px;height:40px;border-radius:12px;object-fit:contain;background:#fff;padding:3px;box-shadow:0 6px 20px rgba(0,0,0,.45)">Pro<b>chess</b></a>
+        <p>Learn, Play, Stream, and Master Chess. Nigeria's home of chess education, tournaments and live broadcast.</p>
+      </div>
+      <div class="fcol">
+        <h4>Explore</h4>
+        <a href="index.html">Homepage</a>
+        <a href="tournament.html">Live tournament</a>
+        <a href="https://nigerian-chess-stream.example.com" target="_blank" rel="noopener">▶ Nigerian Chess Stream</a>
+        <a href="player.html">Player profiles</a>
+        <a href="dashboard.html">Student dashboard</a>
+      </div>
+      <div class="fcol">
+        <h4>Learn</h4>
+        <a href="index.html#academy">Academy courses</a>
+        <a href="index.html#puzzles">Daily puzzles</a>
+        <a href="index.html#camp">Summer camp</a>
+        <a href="index.html#blog">Blog</a>
+      </div>
+      <div class="fcol">
+        <h4>Compete</h4>
+        <a href="tournament.html">Standings</a>
+        <a href="tournament.html">Pairings &amp; results</a>
+        <a href="player.html">Registered players</a>
+        <a href="dashboard.html">My account</a>
+      </div>
+    </div>
+    <div class="fbar">
+      <span>© 2026 <b>Prochess Academy</b>. All rights reserved.</span>
+      <span>Data: <b id="t-id"></b> · Made with ♟ in Nigeria</span>
+    </div>
+  </div>
+</footer>
+
+<script>window.PROCHESS_TOURNAMENTS=window.PROCHESS_TOURNAMENTS||{
+ "olympiad-qualifiers": {
+  "id": "NIGERIA CHESS OLYMPIAD QUALIFIERS 2026 OPEN",
+  "name": "NIGERIA CHESS OLYMPIAD QUALIFIERS 2026 OPEN",
+  "venue": "chevron recreational centre gbagada, Nigeria",
+  "timeControl": "90+30 · Classical",
+  "prizePool": "₦500,000",
+  "rounds": [
+   {
+    "round": 1,
+    "pairings": [
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Abdulraheem, Abdulrahman Akintoye",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Akinseye, Abiola Daniel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Aikhoje, Odion",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Ekunke, Odey Goodness",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Olisa, Tennyson Ewomazino",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Emmanuel, Joy Idara",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Eyetonghan, Denyefa Callistus",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Okhipo, Bartholomew Emmanuel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Kigigha, Bomo Lovet",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Lapite, Oluwadurotimi Opeoluwa",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Nyuima, Tersee Ferdinand",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Balogun, Oluwafemi Daniel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     }
+    ]
+   },
+   {
+    "round": 2,
+    "pairings": [
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Akinseye, Abiola Daniel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Balogun, Oluwafemi Daniel",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Lapite, Oluwadurotimi Opeoluwa",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Nyuima, Tersee Ferdinand",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Okhipo, Bartholomew Emmanuel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Kigigha, Bomo Lovet",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Emmanuel, Joy Idara",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Eyetonghan, Denyefa Callistus",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Ekunke, Odey Goodness",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Olisa, Tennyson Ewomazino",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Abdulraheem, Abdulrahman Akintoye",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Aikhoje, Odion",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     }
+    ]
+   },
+   {
+    "round": 3,
+    "pairings": [
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Aikhoje, Odion",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Akinseye, Abiola Daniel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Olisa, Tennyson Ewomazino",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Abdulraheem, Abdulrahman Akintoye",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Eyetonghan, Denyefa Callistus",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Ekunke, Odey Goodness",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Kigigha, Bomo Lovet",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Emmanuel, Joy Idara",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Nyuima, Tersee Ferdinand",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Okhipo, Bartholomew Emmanuel",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Balogun, Oluwafemi Daniel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Lapite, Oluwadurotimi Opeoluwa",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     }
+    ]
+   },
+   {
+    "round": 4,
+    "pairings": [
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Akinseye, Abiola Daniel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Lapite, Oluwadurotimi Opeoluwa",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Okhipo, Bartholomew Emmanuel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Balogun, Oluwafemi Daniel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Emmanuel, Joy Idara",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Nyuima, Tersee Ferdinand",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Ekunke, Odey Goodness",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Kigigha, Bomo Lovet",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Abdulraheem, Abdulrahman Akintoye",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Eyetonghan, Denyefa Callistus",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Aikhoje, Odion",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Olisa, Tennyson Ewomazino",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     }
+    ]
+   },
+   {
+    "round": 5,
+    "pairings": [
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Olisa, Tennyson Ewomazino",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Akinseye, Abiola Daniel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Eyetonghan, Denyefa Callistus",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Aikhoje, Odion",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Kigigha, Bomo Lovet",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Abdulraheem, Abdulrahman Akintoye",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Nyuima, Tersee Ferdinand",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Ekunke, Odey Goodness",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Balogun, Oluwafemi Daniel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Emmanuel, Joy Idara",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Lapite, Oluwadurotimi Opeoluwa",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Okhipo, Bartholomew Emmanuel",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     }
+    ]
+   },
+   {
+    "round": 6,
+    "pairings": [
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Akinseye, Abiola Daniel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Okhipo, Bartholomew Emmanuel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Emmanuel, Joy Idara",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Lapite, Oluwadurotimi Opeoluwa",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Ekunke, Odey Goodness",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Balogun, Oluwafemi Daniel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Abdulraheem, Abdulrahman Akintoye",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Nyuima, Tersee Ferdinand",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Aikhoje, Odion",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Kigigha, Bomo Lovet",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Olisa, Tennyson Ewomazino",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Eyetonghan, Denyefa Callistus",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     }
+    ]
+   },
+   {
+    "round": 7,
+    "pairings": [
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Eyetonghan, Denyefa Callistus",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Akinseye, Abiola Daniel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Kigigha, Bomo Lovet",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Olisa, Tennyson Ewomazino",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Nyuima, Tersee Ferdinand",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Aikhoje, Odion",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Balogun, Oluwafemi Daniel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Abdulraheem, Abdulrahman Akintoye",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Lapite, Oluwadurotimi Opeoluwa",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Ekunke, Odey Goodness",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Okhipo, Bartholomew Emmanuel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Emmanuel, Joy Idara",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     }
+    ]
+   },
+   {
+    "round": 8,
+    "pairings": [
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Akinseye, Abiola Daniel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Emmanuel, Joy Idara",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Ekunke, Odey Goodness",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Okhipo, Bartholomew Emmanuel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Abdulraheem, Abdulrahman Akintoye",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Lapite, Oluwadurotimi Opeoluwa",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Aikhoje, Odion",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Balogun, Oluwafemi Daniel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Olisa, Tennyson Ewomazino",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Nyuima, Tersee Ferdinand",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Eyetonghan, Denyefa Callistus",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Kigigha, Bomo Lovet",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     }
+    ]
+   },
+   {
+    "round": 9,
+    "pairings": [
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Kigigha, Bomo Lovet",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Akinseye, Abiola Daniel",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Nyuima, Tersee Ferdinand",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Eyetonghan, Denyefa Callistus",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Balogun, Oluwafemi Daniel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Olisa, Tennyson Ewomazino",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Lapite, Oluwadurotimi Opeoluwa",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Aikhoje, Odion",
+       "title": null,
+       "federation": null
+      },
+      "result": "1/2-1/2",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Okhipo, Bartholomew Emmanuel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Abdulraheem, Abdulrahman Akintoye",
+       "title": null,
+       "federation": null
+      },
+      "result": "1-0",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Emmanuel, Joy Idara",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Ekunke, Odey Goodness",
+       "title": null,
+       "federation": null
+      },
+      "result": "0-1",
+      "live": false
+     }
+    ]
+   },
+   {
+    "round": 10,
+    "pairings": [
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Akinseye, Abiola Daniel",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Ekunke, Odey Goodness",
+       "title": null,
+       "federation": null
+      },
+      "result": "*",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Abdulraheem, Abdulrahman Akintoye",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Emmanuel, Joy Idara",
+       "title": null,
+       "federation": null
+      },
+      "result": "*",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Aikhoje, Odion",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Okhipo, Bartholomew Emmanuel",
+       "title": null,
+       "federation": null
+      },
+      "result": "*",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Olisa, Tennyson Ewomazino",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Lapite, Oluwadurotimi Opeoluwa",
+       "title": null,
+       "federation": null
+      },
+      "result": "*",
+      "live": false
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Eyetonghan, Denyefa Callistus",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Balogun, Oluwafemi Daniel",
+       "title": null,
+       "federation": null
+      },
+      "result": "*",
+      "live": true
+     },
+     {
+      "white": {
+       "fname": null,
+       "mname": null,
+       "lname": "Kigigha, Bomo Lovet",
+       "title": null,
+       "federation": null
+      },
+      "black": {
+       "fname": null,
+       "mname": null,
+       "lname": "Nyuima, Tersee Ferdinand",
+       "title": null,
+       "federation": null
+      },
+      "result": "*",
+      "live": false
+     }
+    ]
+   },
+   {
+    "round": 11,
+    "pairings": []
+   }
+  ]
+ }
+};</script>
+<script>window.PROCHESS_FIDE=window.PROCHESS_FIDE||{"players":{"Abdulraheem, Abdulrahman Akintoye":{"fideId":"8504563","name":"ABDULRAHEEM, Abdulrahman Akintoye","fed":"NGR","title":"FM","standard":2316,"rapid":2208,"blitz":2193,"born":1993,"exact":true},"Akinseye, Abiola Daniel":{"fideId":"8503010","name":"AKINSEYE, Abiola Daniel","fed":"NGR","title":"FM","standard":2154,"rapid":2150,"blitz":0,"born":1989,"exact":true},"Aikhoje, Odion":{"fideId":"8500240","name":"AIKHOJE, Odion","fed":"NGR","title":"IM","standard":2246,"rapid":2292,"blitz":2229,"born":1971,"exact":true},"Ekunke, Odey Goodness":{"fideId":"8511888","name":"EKUNKE, Odey Goodness","fed":"NGR","title":"","standard":2280,"rapid":2149,"blitz":2138,"born":2011,"exact":true},"Olisa, Tennyson Ewomazino":{"fideId":"8511390","name":"Olisa, Tennyson Ewomazino","fed":"NGR","title":"FM","standard":2230,"rapid":2058,"blitz":2209,"born":2003,"exact":true},"Emmanuel, Joy Idara":{"fideId":"8513023","name":"EMMANUEL, Joy Idara","fed":"NGR","title":"","standard":2175,"rapid":2093,"blitz":2003,"born":2002,"exact":true},"Eyetonghan, Denyefa Callistus":{"fideId":"8511462","name":"EYETONGHAN, Denyefa Callistus","fed":"NGR","title":"FM","standard":2256,"rapid":2131,"blitz":2123,"born":2002,"exact":true},"Okhipo, Bartholomew Emmanuel":{"fideId":"8509069","name":"OKHIPO, Bartholomew Emmanuel","fed":"NGR","title":"","standard":2246,"rapid":2150,"blitz":2004,"born":1997,"exact":true},"Kigigha, Bomo Lovet":{"fideId":"8500037","name":"Kigigha, Bomo Lovet","fed":"NGR","title":"FM","standard":2287,"rapid":2280,"blitz":2248,"born":1982,"exact":true},"Lapite, Oluwadurotimi Opeoluwa":{"fideId":"8503648","name":"LAPITE, Oluwadurotimi Opeoluwa","fed":"NGR","title":"CM","standard":2228,"rapid":2209,"blitz":2195,"born":1995,"exact":true},"Nyuima, Tersee Ferdinand":{"fideId":"8515263","name":"NYUIMA, Tersee Ferdinand","fed":"NGR","title":"","standard":2174,"rapid":2099,"blitz":1976,"born":2007,"exact":true},"Balogun, Oluwafemi Daniel":{"fideId":"8501246","name":"Balogun, Oluwafemi Daniel","fed":"NGR","title":"IM","standard":2220,"rapid":2246,"blitz":2178,"born":1987,"exact":true}},"generated":"2026-08-05","source":"FIDE combined rating list (players_list_foa.txt)"};</script>
+<script src="tournaments-data.js"></script>
+<script>
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const T=window.PROCHESS_TOURNAMENTS;
+const TID=Object.keys(T)[0];
+const TR=T[TID];
+const fmtName=n=>{
+  if(!n)return"";
+  const i=n.indexOf(",");
+  return i>=0?n.slice(i+1).trim()+" "+n.slice(0,i).trim():n;
+};
+const cap=s=>s?s.replace(/\b\w/g,c=>c.toUpperCase()):s;
+const pad=n=>String(n).padStart(2,"0");
+const GLYPHS=["♔","♕","♖","♗","♘","♙"];
+const fmtPts=p=>Math.floor(p)+(p%1?"½":"");
+const MEDALS=["🥇","🥈","🥉"];
+
+/* ---------- real FIDE ratings (August 2026 FRL, fide-ratings.json) ---------- */
+const FIDE=window.PROCHESS_FIDE||{players:{}};
+const fide=lname=>FIDE.players?FIDE.players[lname]:null;
+const fideUrl=f=>f&&f.fideId?`https://ratings.fide.com/profile/${f.fideId}`:null;
+const titleOf=lname=>(fide(lname)&&fide(lname).title)||"";
+const ratingOf=lname=>{const f=fide(lname);if(!f)return"";const r=f.standard||f.rapid||f.blitz;return r?String(r):"";};
+const myRating=lname=>{const f=fide(lname);if(!f)return 0;return f.standard||f.rapid||f.blitz||0;};
+const roundHalfAway=x=>Math.sign(x)*Math.round(Math.abs(x));
+// FIDE Rating Regulations 8.3.3 — K = 40 (under 18 & <2300), K = 10 (ever ≥2400), else 20
+const kOf=(rating,born)=>{if(born&&(new Date().getFullYear()-born)<18&&rating<2300)return 40;return rating>=2400?10:20;};
+
+/* ---------- standings ---------- */
+function computeStandings(){
+  const map=new Map();
+  const get=p=>{
+    const k=p.lname||"";
+    if(!map.has(k))map.set(k,{name:k,title:p.title||"",born:fide(k)&&fide(k).born||null,pts:0,w:0,d:0,l:0,opps:[],games:[]});
+    return map.get(k);
+  };
+  TR.rounds.forEach(r=>r.pairings.forEach(pg=>{
+    if(!pg.white?.lname||!pg.black?.lname)return;
+    const w=get(pg.white),b=get(pg.black);
+    const wr=myRating(w.name),br=myRating(b.name);
+    switch(pg.result){
+      case"1-0":w.pts+=1;w.w++;b.l++;w.opps.push(b);b.opps.push(w);if(wr)w.games.push({oppR:br,score:1});if(br)b.games.push({oppR:wr,score:0});break;
+      case"0-1":b.pts+=1;b.w++;w.l++;w.opps.push(b);b.opps.push(w);if(wr)w.games.push({oppR:br,score:0});if(br)b.games.push({oppR:wr,score:1});break;
+      case"1/2-1/2":w.pts+=.5;b.pts+=.5;w.d++;b.d++;w.opps.push(b);b.opps.push(w);if(wr)w.games.push({oppR:br,score:.5});if(br)b.games.push({oppR:wr,score:.5});break;
+      default:break; // pending — not counted
+    }
+  }));
+  const list=[...map.values()].map(p=>({...p,buch:p.opps.reduce((s,o)=>s+o.pts,0)})).map(perfDelta);
+  list.sort((a,b)=>b.pts-a.pts||b.buch-a.buch||a.name.localeCompare(b.name));
+  return list;
+}
+// Per-game Elo math (FIDE 8.1/8.3): perf rating = avg opp rating + dp(p); Δ = K × (score − expected), D capped at 400.
+function perfDelta(p){
+  const myR=myRating(p.name);
+  const games=p.games.filter(g=>g.oppR>0);
+  if(!myR||!games.length){p.perf=null;p.delta=null;return p;}
+  const score=games.reduce((s,g)=>s+g.score,0);
+  const n=games.length;
+  const avgOpp=games.reduce((s,g)=>s+g.oppR,0)/n;
+  let exp=0;
+  games.forEach(g=>{
+    const D=Math.max(-400,Math.min(400,g.oppR-myR));
+    exp+=1/(1+Math.pow(10,D/400)); // E = 1/(1+10^((opp−me)/400))
+  });
+  const pct=score/n;
+  const dp=pct<=0?-800:pct>=1?800:-400*Math.log10(1/pct-1);
+  p.perf=Math.round(avgOpp+dp);
+  p.k=kOf(myR,p.born);
+  p.delta=roundHalfAway(p.k*(score-exp));
+  return p;
+}
+const standings=computeStandings();
+
+/* ---------- live info ---------- */
+const liveRound=TR.rounds.find(r=>r.pairings.some(p=>p.live))||TR.rounds[TR.rounds.length-1];
+const livePlayers=new Set();
+liveRound?.pairings.forEach(p=>{if(p.live){livePlayers.add(p.white?.lname);livePlayers.add(p.black?.lname);}});
+const playedGames=TR.rounds.reduce((n,r)=>n+r.pairings.filter(p=>p.result!=="*").length,0);
+const pendingGames=TR.rounds.reduce((n,r)=>n+r.pairings.filter(p=>p.result==="*").length,0);
+
+/* ---------- hero fill ---------- */
+$("#t-name").textContent=TR.name;
+$("#t-venue").textContent=cap(TR.venue);
+$("#t-time").textContent=TR.timeControl;
+$("#t-prize").textContent=TR.prizePool;
+$("#t-players").textContent=standings.length;
+$("#t-rounds").textContent=TR.rounds.filter(r=>r.pairings.length).length+" played";
+$("#t-games").textContent=playedGames;
+$("#t-id").textContent=TR.id;
+if(liveRound&&pendingGames>0){
+  $("#t-status").textContent="Live now — round "+liveRound.round;
+  $("#t-live").innerHTML='<span class="dot"></span>'+pendingGames+" live";
+}else{
+  $("#t-live").innerHTML='<span class="dot" style="background:var(--gold)"></span>Finished';
+}
+
+/* ---------- standings table ---------- */
+const stBody=$("#standings").querySelector("tbody")||$("#standings");
+$("#standings").innerHTML="<thead><tr><th></th><th>Player</th><th>Elo</th><th>Perf</th><th>Δ</th><th>Pts</th><th>W</th><th>D</th><th>L</th><th>Buch</th></tr></thead><tbody>"+
+  standings.map((p,i)=>{
+    const live=livePlayers.has(p.name)?" livepl":"";
+    const rk=i<3?`<span class="medal">${MEDALS[i]}</span>`:`<span class="rk">${i+1}</span>`;
+    const f=fide(p.name);
+    const tl=titleOf(p.name)?`<span class="tl">${titleOf(p.name)}</span>`:"";
+    const u=fideUrl(f);
+    const rt=ratingOf(p.name);
+    const nm=`<a href="player.html?name=${encodeURIComponent(p.name)}" title="Player profile">${fmtName(p.name)}${tl}</a>${u?` <a class="fide-link" href="${u}" target="_blank" rel="noopener" title="Official FIDE profile — ID ${f.fideId}">↗</a>`:""}`;
+    const delCls=p.delta==null?"flat":p.delta>0?"up":p.delta<0?"down":"flat";
+    const delTxt=p.delta==null?"—":(p.delta>0?"+":"")+p.delta;
+    return `<tr><td class="rk">${rk}</td><td class="pname${live}">${nm}${live?' <span style="font-size:10px;color:var(--green)">●LIVE</span>':""}</td>
+      <td class="rate">${rt?rt:`<span class="none">—</span>`}</td>
+      <td class="rate">${p.perf?p.perf:`<span class="none">—</span>`}</td>
+      <td class="del ${delCls}" title="${p.k?"K="+p.k+" · per FIDE 8.3.3":"unrated"}">${delTxt}</td>
+      <td class="pts">${fmtPts(p.pts)}</td><td class="sm">${p.w}</td><td class="sm">${p.d}</td><td class="sm">${p.l}</td><td class="sm">${fmtPts(p.buch)}</td></tr>`;
+  }).join("")+"</tbody>";
+
+/* ---------- players ---------- */
+$("#players").innerHTML=standings.map((p,i)=>{
+  const f=fide(p.name),u=fideUrl(f),tl=titleOf(p.name);
+  const nm=`<a href="player.html?name=${encodeURIComponent(p.name)}" title="Player profile">${fmtName(p.name)}</a>`;
+  return `<div class="pl"><span class="av">${GLYPHS[i%6]}</span><div><b>${nm}${tl?` <span class="tl">${tl}</span>`:""}</b><span>${ratingOf(p.name)||"—"} · ${fmtPts(p.pts)} pts</span></div></div>`;
+}).join("");
+
+/* ---------- round tabs + pairings ---------- */
+const roundsWithData=TR.rounds.filter(r=>r.pairings.length);
+let cur=liveRound?liveRound.round:roundsWithData[0].round;
+function renderTabs(){
+  $("#rtabs").innerHTML=roundsWithData.map(r=>{
+    const isLive=r.pairings.some(p=>p.live);
+    return `<button class="rtab ${r.round===cur?"on":""}" data-r="${r.round}">
+      Round ${r.round}${isLive?` <span class="st">● LIVE</span>`:""}</button>`;
+  }).join("");
+  document.querySelectorAll(".rtab").forEach(b=>b.addEventListener("click",()=>{cur=+b.dataset.r;renderTabs();renderPairings();}));
+}
+function resChip(res){
+  if(res==="1-0")return'<span class="res w">1–0</span>';
+  if(res==="0-1")return'<span class="res b">0–1</span>';
+  if(res==="1/2-1/2")return'<span class="res d">½–½</span>';
+  return'<span class="res">VS</span>';
+}
+function side(p,col){
+  const tl=titleOf(p.lname)?`<span class="tl">${titleOf(p.lname)}</span>`:"";
+  const f=fide(p.lname),u=fideUrl(f),rt=ratingOf(p.lname);
+  const nm=`<a class="nm" href="player.html?name=${encodeURIComponent(p.lname)}" title="Player profile">${fmtName(p.lname)}${tl}</a>`;
+  return `<div class="side ${col}"><span class="av">${GLYPHS[(p.lname?.length||0)%6]}</span>
+    <div class="nmwrap">${nm}${rt?`<span class="rt">FIDE ${rt}</span>`:""}</div></div>`;
+}
+function renderPairings(){
+  const r=TR.rounds.find(x=>x.round===cur);
+  if(!r){$("#pairings").innerHTML="";return;}
+  $("#pairings").innerHTML=r.pairings.map((p,i)=>
+    `<div class="board ${p.live?"live":""}"><span class="bnum">${i+1}</span>
+      ${side(p.white,"w")}
+      <div class="mid">${p.live?`<span class="livepill"><span class="dot"></span>LIVE</span>`:resChip(p.result)}</div>
+      ${side(p.black,"b")}
+    </div>`).join("");
+}
+renderTabs();
+renderPairings();
+if(liveRound)$("#lb-round").textContent=liveRound.round;
+
+/* ---------- reveal ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.08});
+document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+
+/* ---------- burger ---------- */
+$("#burger").addEventListener("click",()=>$("#mobilemenu").classList.toggle("open"));
+</script>
+</body>
+</html>

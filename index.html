@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prochess — Learn, Play, Stream, and Master Chess</title>
+<meta name="description" content="Prochess Academy. Learn, Play, Stream, and Master Chess. Courses, puzzles, tournaments, live games and certified coaching for kids and adults.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♞</text></svg>">
+<style>
+  :root{
+    --bg:#070b12;
+    --bg2:#0b1120;
+    --surface:#111a2c;
+    --surface2:#16213a;
+    --line:rgba(148,180,255,.10);
+    --line2:rgba(148,180,255,.18);
+    --text:#eaf1fb;
+    --muted:#93a5c0;
+    --green:#22c55e;
+    --green2:#16a34a;
+    --gold:#f5b93f;
+    --red:#f87171;
+    --radius:18px;
+    --shadow:0 20px 60px rgba(0,0,0,.45);
+    --font:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --piece:"Segoe UI Symbol","Arial Unicode MS","DejaVu Sans",serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden;line-height:1.55}
+  ::selection{background:rgba(34,197,94,.35)}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  .piece{font-family:var(--piece)}
+
+  /* ---------- nav ---------- */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    transition:background .3s,border-color .3s,backdrop-filter .3s;
+    border-bottom:1px solid transparent;
+  }
+  header.scrolled{background:rgba(7,11,18,.85);backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:-.3px}
+  .logo .mark{
+    width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:24px;color:#fff;
+    background:linear-gradient(135deg,var(--green2),var(--green));
+    box-shadow:0 6px 20px rgba(34,197,94,.35);
+  }
+  .logo b{color:var(--green)}
+  .navlinks{display:flex;align-items:center;gap:26px;font-size:14.5px;font-weight:600;color:var(--muted)}
+  .navlinks a{transition:color .2s;position:relative;padding:6px 0}
+  .navlinks a:hover{color:#fff}
+  .navlinks a.on{color:var(--green)}
+  .navlinks a::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--green);transition:width .25s;border-radius:2px}
+  .navlinks a.on::after{width:100%}
+  .navlinks a:hover::after{width:100%}
+  .navcta{display:flex;align-items:center;gap:12px}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:11px 22px;border-radius:12px;font-weight:700;font-size:14.5px;cursor:pointer;
+    border:1px solid transparent;transition:transform .15s,box-shadow .2s,background .2s;white-space:nowrap;
+  }
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:linear-gradient(135deg,var(--green2),var(--green));color:#04110a;box-shadow:0 8px 24px rgba(34,197,94,.35)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(34,197,94,.45)}
+  .btn-ghost{border-color:var(--line2);color:var(--text);background:rgba(255,255,255,.03)}
+  .btn-ghost:hover{background:rgba(255,255,255,.08);transform:translateY(-2px)}
+  .btn-gold{background:linear-gradient(135deg,#f59e0b,var(--gold));color:#241503;box-shadow:0 8px 24px rgba(245,185,63,.3)}
+  .btn-gold:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(245,185,63,.42)}
+  .btn-sm{padding:8px 16px;font-size:13.5px;border-radius:10px}
+  .burger{display:none;background:none;border:1px solid var(--line2);border-radius:10px;width:42px;height:42px;color:#fff;font-size:19px;cursor:pointer}
+  .mobilemenu{display:none;flex-direction:column;gap:4px;padding:12px 0 20px;border-top:1px solid var(--line)}
+  .mobilemenu a{padding:13px 6px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line)}
+  .mobilemenu a:hover{color:#fff}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:170px 0 110px;overflow:hidden;background:
+    radial-gradient(900px 500px at 85% -10%,rgba(34,197,94,.14),transparent 60%),
+    radial-gradient(700px 500px at -10% 20%,rgba(37,99,235,.12),transparent 60%),
+    var(--bg);}
+  .hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:
+      linear-gradient(rgba(148,180,255,.045) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(148,180,255,.045) 1px,transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(700px 500px at 60% 30%,#000 30%,transparent 75%);
+  }
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center;position:relative}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:1.6px;
+    text-transform:uppercase;color:var(--green);background:rgba(34,197,94,.1);
+    border:1px solid rgba(34,197,94,.25);padding:7px 14px;border-radius:99px;margin-bottom:22px;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
+  .hero h1{font-size:clamp(38px,5.2vw,62px);line-height:1.06;font-weight:900;letter-spacing:-1.5px;margin-bottom:20px}
+  .hero h1 .grad{
+    background:linear-gradient(90deg,#34d399,var(--green) 45%,#86efac);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.sub{font-size:18px;color:var(--muted);max-width:540px;margin-bottom:32px}
+  .hero .ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+  .hero .trust{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:13.5px}
+  .hero .trust .avatars{display:flex}
+  .hero .trust .avatars span{
+    width:34px;height:34px;border-radius:50%;border:2px solid var(--bg);
+    display:grid;place-items:center;font-family:var(--piece);font-size:17px;color:#fff;margin-left:-9px;
+  }
+  .hero .trust .avatars span:first-child{margin-left:0}
+  .hero .trust .stars{color:var(--gold);letter-spacing:2px;font-size:14px}
+  .hero .trust b{color:var(--text)}
+
+  /* hero board */
+  .boardstage{position:relative;display:flex;justify-content:center}
+  .boardglow{
+    position:absolute;inset:-12%;z-index:0;border-radius:50%;filter:blur(70px);opacity:.5;
+    background:radial-gradient(circle,rgba(34,197,94,.4),rgba(37,99,235,.25) 60%,transparent);
+  }
+  .boardcard{
+    position:relative;z-index:1;width:min(430px,92%);
+    transform:rotate(-4deg) perspective(1200px) rotateY(8deg) rotateX(4deg);
+    transition:transform .5s ease;
+  }
+  .boardcard:hover{transform:rotate(0) perspective(1200px) rotateY(0) rotateX(0)}
+  .boardframe{
+    background:linear-gradient(145deg,#22304f,#0d1526);
+    border:1px solid var(--line2);border-radius:20px;padding:14px;box-shadow:var(--shadow);
+  }
+  .boardframe svg{width:100%;height:auto;border-radius:10px;display:block}
+  .floatchip{
+    position:absolute;z-index:2;display:flex;align-items:center;gap:10px;
+    background:rgba(13,21,38,.92);border:1px solid var(--line2);border-radius:14px;
+    padding:10px 16px;font-size:13px;font-weight:700;box-shadow:var(--shadow);backdrop-filter:blur(8px);
+    animation:float 5s ease-in-out infinite;
+  }
+  .floatchip .ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-family:var(--piece);font-size:19px}
+  .chip1{top:-18px;right:-26px}
+  .chip1 .ic{background:rgba(34,197,94,.16);color:var(--green)}
+  .chip2{bottom:52px;left:-34px;animation-delay:1.4s}
+  .chip2 .ic{background:rgba(245,185,63,.16);color:var(--gold)}
+  .chip3{bottom:-20px;right:6px;animation-delay:2.6s}
+  .chip3 .ic{background:rgba(96,165,250,.16);color:#60a5fa}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .floatpiece{
+    position:absolute;font-family:var(--piece);color:rgba(234,241,251,.22);pointer-events:none;
+    animation:float 7s ease-in-out infinite;
+  }
+  .fp1{font-size:60px;top:6%;left:-6%;transform:rotate(-14deg)}
+  .fp2{font-size:44px;bottom:4%;right:-8%;transform:rotate(16deg);animation-delay:2s}
+  .fp3{font-size:34px;top:38%;right:-12%;animation-delay:3.4s}
+  .scrollhint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);color:var(--muted);font-size:12px;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:8px;opacity:.7}
+  .scrollhint .mouse{width:20px;height:32px;border:2px solid var(--muted);border-radius:12px;position:relative}
+  .scrollhint .mouse::after{content:"";position:absolute;left:50%;top:5px;width:3px;height:7px;margin-left:-1.5px;border-radius:3px;background:var(--green);animation:wheel 1.6s infinite}
+  @keyframes wheel{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(12px)}}
+
+  /* ---------- sections common ---------- */
+  section{padding:96px 0;position:relative}
+  .sec-head{max-width:640px;margin-bottom:52px}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:14px}
+  .kicker::before{content:"";width:26px;height:2px;background:var(--green);border-radius:2px}
+  .sec-head.center .kicker::after{content:"";width:26px;height:2px;background:var(--green);border-radius:2px}
+  h2{font-size:clamp(28px,3.6vw,42px);font-weight:900;letter-spacing:-1px;line-height:1.12;margin-bottom:16px}
+  .sec-head p{color:var(--muted);font-size:16.5px}
+
+  /* ---------- stats ---------- */
+  .stats{background:linear-gradient(180deg,var(--bg),var(--bg2));padding:70px 0}
+  .statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  .stat{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px 26px;text-align:center;transition:transform .3s,border-color .3s;
+  }
+  .stat:hover{transform:translateY(-5px);border-color:rgba(34,197,94,.4)}
+  .stat .num{font-size:clamp(30px,3.4vw,42px);font-weight:900;letter-spacing:-1px;color:#fff}
+  .stat .num i{font-style:normal;color:var(--green)}
+  .stat .lbl{color:var(--muted);font-size:13.5px;font-weight:600;margin-top:6px}
+  .stat .pic{font-family:var(--piece);font-size:22px;margin-bottom:8px}
+
+  /* ---------- cards ---------- */
+  .cards{display:grid;gap:24px}
+  .c3{grid-template-columns:repeat(3,1fr)}
+  .c4{grid-template-columns:repeat(4,1fr)}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s;position:relative;
+  }
+  .card:hover{transform:translateY(-6px);border-color:rgba(34,197,94,.45);box-shadow:0 18px 44px rgba(0,0,0,.4)}
+  .card .top{height:120px;display:grid;place-items:center;position:relative;overflow:hidden}
+  .card .top .glyph{font-family:var(--piece);font-size:56px;color:#fff;text-shadow:0 6px 24px rgba(0,0,0,.5);position:relative;z-index:1}
+  .card .top::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.12),transparent 60%)}
+  .card .body{padding:22px 22px 24px}
+  .card .body h3{font-size:19px;font-weight:800;margin-bottom:8px}
+  .card .body p{color:var(--muted);font-size:14px;margin-bottom:14px}
+  .tagrow{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+  .tag{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:99px;background:rgba(148,180,255,.08);border:1px solid var(--line);color:var(--muted)}
+  .tag.green{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.25);color:#6ee7a0}
+  .link{font-size:14px;font-weight:800;color:var(--green);display:inline-flex;align-items:center;gap:6px;transition:gap .2s}
+  .link:hover{gap:10px}
+  .price{font-size:26px;font-weight:900;color:#fff}
+  .price small{font-size:13px;color:var(--muted);font-weight:600}
+
+  /* ---------- academy ---------- */
+  .academy{background:var(--bg2)}
+  .levels{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .level{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px;position:relative;transition:transform .3s,border-color .3s;
+  }
+  .level:hover{transform:translateY(-6px);border-color:rgba(34,197,94,.45)}
+  .level .badge{
+    position:absolute;top:22px;right:22px;font-size:11px;font-weight:800;letter-spacing:1px;
+    padding:5px 12px;border-radius:99px;text-transform:uppercase;
+  }
+  .b-beg{background:rgba(96,165,250,.14);color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
+  .b-int{background:rgba(245,185,63,.13);color:var(--gold);border:1px solid rgba(245,185,63,.3)}
+  .b-adv{background:rgba(248,113,113,.13);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+  .level .pic{font-family:var(--piece);font-size:40px;margin-bottom:16px}
+  .level h3{font-size:21px;font-weight:800;margin-bottom:10px}
+  .level p{color:var(--muted);font-size:14px;margin-bottom:18px}
+  .mods{list-style:none;margin-bottom:22px}
+  .mods li{display:flex;align-items:center;gap:10px;font-size:14px;color:#c9d6e8;padding:7px 0;border-bottom:1px dashed var(--line)}
+  .mods li:last-child{border-bottom:none}
+  .mods .ck{width:19px;height:19px;border-radius:6px;display:grid;place-items:center;font-size:12px;flex:none}
+  .ck.on{background:rgba(34,197,94,.16);color:var(--green)}
+  .ck.off{background:rgba(148,180,255,.07);color:#5a6b85}
+  .mods li b{color:#fff}
+
+  /* ---------- puzzles ---------- */
+  .puzzlegrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px;align-items:center}
+  .puzzlecard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:28px;position:relative;overflow:hidden}
+  .puzzlecard::before{content:"";position:absolute;inset:0;background:radial-gradient(500px 300px at 90% -20%,rgba(34,197,94,.12),transparent 60%);pointer-events:none}
+  .dailypuzzle{display:flex;gap:20px;align-items:center}
+  .miniboard{width:150px;flex:none;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  .miniboard svg{width:100%;height:auto;display:block}
+  .dailypuzzle .meta h4{font-size:15px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:6px}
+  .dailypuzzle .meta h3{font-size:20px;font-weight:800;margin-bottom:12px}
+  .diff{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+  .diff span{font-size:12px;font-weight:800;padding:6px 13px;border-radius:99px;cursor:pointer;border:1px solid var(--line);color:var(--muted);transition:all .2s}
+  .diff span:hover{color:#fff;border-color:var(--line2)}
+  .diff span.on{background:var(--green);color:#04110a;border-color:var(--green);box-shadow:0 4px 16px rgba(34,197,94,.35)}
+  .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+  .mode{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;gap:12px;align-items:center;transition:transform .25s,border-color .25s;cursor:pointer}
+  .mode:hover{transform:translateY(-3px);border-color:rgba(34,197,94,.4)}
+  .mode .mi{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-size:20px;flex:none}
+  .mode h4{font-size:14.5px;font-weight:800}
+  .mode p{font-size:12px;color:var(--muted)}
+
+  /* ---------- tournaments ---------- */
+  .tournaments{background:var(--bg2)}
+  .tgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px}
+  .tcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;display:flex;flex-direction:column;gap:14px;transition:transform .3s,border-color .3s}
+  .tcard:hover{transform:translateY(-5px);border-color:rgba(34,197,94,.45)}
+  .tcard .thead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .tcard h3{font-size:18px;font-weight:800;line-height:1.3}
+  .livebadge{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;color:#86efac;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.35);padding:5px 12px;border-radius:99px;flex:none}
+  .livebadge .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.4s infinite}
+  .tmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .tmeta .m{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+  .tmeta .m b{display:block;font-size:15px;color:#fff}
+  .tmeta .m span{font-size:11.5px;color:var(--muted);font-weight:600}
+  .tfoot{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+  .tfoot .prize{color:var(--gold);font-weight:800;font-size:14px}
+  .regbtn{width:100%;margin-top:6px}
+  .cdrow{display:flex;gap:10px;margin-bottom:16px}
+  .cd{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;flex:1 1 0;min-width:0}
+  .cd b{font-size:24px;font-weight:900;color:#fff;display:block;line-height:1.1}
+  .cd span{font-size:10.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+
+  /* ---------- summer camp ---------- */
+  .camp{background:
+    radial-gradient(700px 400px at 15% 0%,rgba(245,185,63,.08),transparent 60%),
+    radial-gradient(700px 400px at 90% 100%,rgba(34,197,94,.08),transparent 60%),var(--bg)}
+  .campgrid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  .camp .features{list-style:none;margin:24px 0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .camp .features li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;color:#c9d6e8}
+  .camp .features .ck{margin-top:2px}
+  .plans{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+  .plan{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;position:relative;transition:transform .3s,border-color .3s}
+  .plan:hover{transform:translateY(-5px)}
+  .plan.feat{border-color:rgba(245,185,63,.55);background:linear-gradient(160deg,rgba(245,185,63,.08),var(--surface) 55%)}
+  .plan .flag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#f59e0b,var(--gold));color:#241503;font-size:11px;font-weight:900;letter-spacing:1px;padding:5px 14px;border-radius:99px;text-transform:uppercase;box-shadow:0 6px 18px rgba(245,185,63,.35)}
+  .plan h4{font-size:14px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
+  .plan .price{margin-bottom:6px}
+  .plan ul{list-style:none;margin-top:14px}
+  .plan ul li{font-size:13.5px;color:#c9d6e8;padding:5px 0;display:flex;gap:9px;align-items:center}
+  .plan ul .ck{font-size:13px}
+  .schedule{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:26px}
+  .schedule .srow{display:grid;grid-template-columns:110px 1fr;gap:14px;padding:13px 22px;font-size:13.5px;align-items:center;border-bottom:1px solid var(--line)}
+  .schedule .srow:last-child{border-bottom:none}
+  .schedule .srow:hover{background:rgba(255,255,255,.03)}
+  .schedule .time{font-weight:800;color:var(--green)}
+  .schedule .day{font-weight:800;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px}
+
+  /* ---------- coaches ---------- */
+  .coachgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .coach{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:28px;text-align:center;transition:transform .3s,border-color .3s}
+  .coach:hover{transform:translateY(-6px);border-color:rgba(34,197,94,.45)}
+  .coach .avatar{
+    width:86px;height:86px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;font-size:42px;
+    font-family:var(--piece);color:#fff;background:linear-gradient(145deg,#22304f,#0d1526);
+    border:2px solid rgba(34,197,94,.4);box-shadow:0 0 0 6px rgba(34,197,94,.08);
+  }
+  .coach h3{font-size:18px;font-weight:800}
+  .coach .role{font-size:13px;color:var(--muted);margin:4px 0 12px}
+  .coach .rating{display:inline-flex;align-items:center;gap:7px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#6ee7a0;font-weight:800;font-size:13px;padding:5px 14px;border-radius:99px;margin-bottom:14px}
+  .coach .rating::before{content:"♟";font-family:var(--piece)}
+  .coach .specs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:18px}
+  .coach .specs span{font-size:11.5px;font-weight:700;color:var(--muted);background:rgba(148,180,255,.07);border:1px solid var(--line);padding:4px 10px;border-radius:99px}
+
+  /* ---------- testimonials ---------- */
+  .testi{background:var(--bg2);overflow:hidden}
+  .tcarousel{position:relative;max-width:780px;margin:0 auto}
+  .tslide{display:none;text-align:center;animation:fadeIn .5s ease}
+  .tslide.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .tslide .quote{font-size:clamp(17px,2.2vw,22px);font-weight:600;line-height:1.6;color:#dbe6f5;margin-bottom:24px}
+  .tslide .quote::before{content:"“";color:var(--green);font-size:1.4em}
+  .tslide .who{display:flex;align-items:center;justify-content:center;gap:14px}
+  .tslide .who .avatar{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-family:var(--piece);font-size:26px;color:#fff;background:linear-gradient(145deg,#22304f,#0d1526);border:2px solid rgba(34,197,94,.4)}
+  .tslide .who b{display:block;font-size:15px}
+  .tslide .who span{font-size:12.5px;color:var(--muted)}
+  .tdots{display:flex;justify-content:center;gap:8px;margin-top:28px}
+  .tdots button{width:9px;height:9px;border-radius:50%;border:none;background:rgba(148,180,255,.25);cursor:pointer;transition:all .25s}
+  .tdots button.on{background:var(--green);transform:scale(1.35)}
+  .tarrows{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid var(--line2);background:var(--surface);color:#fff;font-size:18px;cursor:pointer;transition:all .2s;z-index:2}
+  .tarrows:hover{background:var(--green);color:#04110a;border-color:var(--green)}
+  .tarrows.prev{left:-70px}
+  .tarrows.next{right:-70px}
+
+  /* ---------- live strip ---------- */
+  .livestrip{background:
+    linear-gradient(100deg,rgba(34,197,94,.12),rgba(37,99,235,.1)),var(--surface);
+    border:1px solid var(--line);border-radius:24px;padding:44px;display:flex;align-items:center;gap:36px;
+    position:relative;overflow:hidden;
+  }
+  .livestrip::after{content:"♞";font-family:var(--piece);position:absolute;right:-20px;bottom:-40px;font-size:190px;color:rgba(255,255,255,.04);transform:rotate(-12deg)}
+  .livestrip .ls-ic{flex:none;width:84px;height:84px;border-radius:22px;display:grid;place-items:center;font-size:40px;font-family:var(--piece);background:linear-gradient(135deg,var(--green2),var(--green));color:#04110a;box-shadow:0 14px 36px rgba(34,197,94,.4)}
+  .livestrip h3{font-size:clamp(22px,2.8vw,30px);font-weight:900;margin-bottom:8px}
+  .livestrip p{color:var(--muted);font-size:15px;max-width:560px}
+  .livestrip .btn{flex:none}
+
+  /* ---------- blog ---------- */
+  .bloggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .post .cover{height:150px;border-radius:var(--radius) var(--radius) 0 0;display:grid;place-items:center;font-size:46px;position:relative;overflow:hidden}
+  .post .cover .glyph{font-family:var(--piece)}
+  .post .body{padding:20px 22px 22px}
+  .post .cat{font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--green)}
+  .post h3{font-size:16.5px;font-weight:800;line-height:1.35;margin:8px 0 10px}
+  .post .body p{font-size:13.5px;color:var(--muted)}
+  .post .meta{font-size:12px;color:var(--muted);margin-top:12px;display:flex;gap:14px}
+
+  /* ---------- cta ---------- */
+  .ctaband{text-align:center;padding:90px 0}
+  .ctaband h2{max-width:640px;margin-left:auto;margin-right:auto}
+  .ctaband p{color:var(--muted);font-size:16.5px;max-width:520px;margin:0 auto 30px}
+  .ctaband .ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+  /* ---------- footer ---------- */
+  footer{background:#05080e;border-top:1px solid var(--line);padding:70px 0 34px}
+  .fgrid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+  .fcol h4{font-size:13px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#fff;margin-bottom:18px}
+  .fcol a{display:block;color:var(--muted);font-size:14px;padding:6px 0;transition:color .2s}
+  .fcol a:hover{color:var(--green)}
+  .fcol p{color:var(--muted);font-size:14px;margin:14px 0 18px;max-width:300px}
+  .fcol .logo{margin-bottom:6px}
+  .news{display:flex;gap:8px;margin-top:18px}
+  .news input{flex:1 1 0;min-width:0;background:var(--surface);border:1px solid var(--line2);border-radius:10px;padding:11px 14px;color:#fff;font-size:13.5px;outline:none;transition:border-color .2s}
+  .news input:focus{border-color:var(--green)}
+  .news input::placeholder{color:#5a6b85}
+  .socials{display:flex;gap:10px;margin-top:20px}
+  .socials a{width:38px;height:38px;border-radius:11px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font-size:15px;color:var(--muted);transition:all .25s}
+  .socials a:hover{color:#04110a;background:var(--green);border-color:var(--green);transform:translateY(-3px)}
+  .fbar{border-top:1px solid var(--line);padding-top:24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:#5a6b85;font-size:13px}
+  .fbar b{color:var(--muted)}
+
+  /* ---------- reveal ---------- */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+  @media (max-width:1024px){
+    .hero-grid{grid-template-columns:1fr;gap:60px}
+    .boardstage{order:-1;transform:scale(.9)}
+    .stats .statrow,.cards.c4{grid-template-columns:repeat(2,1fr)}
+    .tarrows.prev{left:-8px}.tarrows.next{right:-8px}
+  }
+  @media (max-width:760px){
+    .puzzlegrid,.tgrid,.campgrid,.plans{grid-template-columns:minmax(0,1fr)}
+    .navlinks,.navcta .btn-ghost{display:none}
+    .burger{display:block}
+    .navcta .btn{display:none}
+    .mobilemenu.open{display:flex}
+    .hero{padding:140px 0 90px}
+    .levels,.coachgrid,.bloggrid,.cards.c3{grid-template-columns:1fr}
+    .statrow{grid-template-columns:1fr 1fr}
+    .camp .features{grid-template-columns:1fr}
+    .livestrip{flex-direction:column;text-align:center;padding:36px 24px}
+    .livestrip .btn{width:100%}
+    .fgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+    .tmeta{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:480px){
+    .dailypuzzle{flex-direction:column;align-items:flex-start}
+    .miniboard{width:100%;max-width:250px}
+    .modegrid{grid-template-columns:1fr}
+    .schedule .srow{grid-template-columns:1fr;gap:4px}
+    .cd b{font-size:18px}
+    .cd{padding:8px 4px}
+    .news{flex-direction:column}
+    .news .btn{width:100%}
+    .statrow{grid-template-columns:1fr 1fr;gap:12px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<header id="header">
+  <div class="wrap">
+    <nav class="nav">
+      <a class="logo" href="index.html"><img src="prochess-logo.png" alt="PROCHESS" style="width:40px;height:40px;border-radius:12px;object-fit:contain;background:#fff;padding:3px;box-shadow:0 6px 20px rgba(0,0,0,.45)">Pro<b>chess</b></a>
+      <div class="navlinks" id="navlinks">
+        <a href="index.html" class="on">Home</a>
+        <a href="#academy">Academy</a>
+        <a href="#puzzles">Puzzles</a>
+        <a href="tournament.html">Tournaments</a>
+        <a href="player.html">Players</a>
+        <a href="#camp">Summer Camp</a>
+        <a href="#coaches">Coaches</a>
+        <a href="#blog">Blog</a>
+        <a href="https://nigerian-chess-stream.example.com" target="_blank" rel="noopener">▶ Live Stream</a>
+      </div>
+      <div class="navcta">
+        <a href="dashboard.html" class="btn btn-ghost btn-sm">Log in</a>
+        <a href="#join" class="btn btn-primary btn-sm">Join Free</a>
+        <button class="burger" id="burger" aria-label="Menu">☰</button>
+      </div>
+    </nav>
+    <div class="mobilemenu" id="mobilemenu">
+      <a href="index.html">Home</a>
+      <a href="#academy">Academy</a>
+      <a href="#puzzles">Puzzles</a>
+      <a href="tournament.html">Tournaments</a>
+      <a href="player.html">Players</a>
+      <a href="#camp">Summer Camp</a>
+      <a href="#coaches">Coaches</a>
+      <a href="#blog">Blog</a>
+      <a href="https://nigerian-chess-stream.example.com" target="_blank" rel="noopener">▶ Live Stream</a>
+      <a href="dashboard.html" class="btn btn-primary" style="justify-content:center;margin-top:10px">Log in → my dashboard</a>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span> Nigeria's #1 Chess Academy &amp; Streaming Platform</span>
+      <h1>Learn, Play, <span class="grad">Stream</span>, and Master Chess.</h1>
+      <p class="sub">World-class lessons, daily puzzles, live tournament broadcasts and certified coaching — from first move to FIDE master, all in one place. Prochess is also FIDE&apos;s partner for the Infinite Chess Project in Nigeria.</p>
+      <div class="ctas">
+        <a href="#join" class="btn btn-primary" style="padding:14px 30px;font-size:15.5px">🎓 Join Academy</a>
+        <a href="tournament.html" class="btn btn-gold" style="padding:14px 30px;font-size:15.5px">▶ Watch Live Games</a>
+      </div>
+      <div class="trust">
+        <div class="avatars">
+          <span style="background:linear-gradient(135deg,#2563eb,#60a5fa)">♞</span>
+          <span style="background:linear-gradient(135deg,#16a34a,#4ade80)">♜</span>
+          <span style="background:linear-gradient(135deg,#9333ea,#c084fc)">♝</span>
+          <span style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">♛</span>
+          <span style="background:linear-gradient(135deg,#dc2626,#f87171)">♚</span>
+        </div>
+        <div><span class="stars">★★★★★</span><br><b>2,500+</b> students trust Prochess</div>
+      </div>
+    </div>
+
+    <div class="boardstage">
+      <div class="boardglow"></div>
+      <div class="floatpiece fp1">♞</div>
+      <div class="floatpiece fp2">♛</div>
+      <div class="floatpiece fp3">♜</div>
+      <div class="boardcard">
+        <div class="boardframe">
+          <svg id="heroboard" viewBox="0 0 400 400"></svg>
+        </div>
+      </div>
+      <div class="floatchip chip1"><span class="ic">♟</span><div>Next tournament<br><span style="color:var(--green);font-size:12px">in <b id="chip-count">--:--:--</b></span></div></div>
+      <div class="floatchip chip2"><span class="ic">🏆</span><div>182 tournaments<br><span style="color:var(--muted);font-size:12px;font-weight:600">hosted &amp; counting</span></div></div>
+      <div class="floatchip chip3"><span class="ic">🎯</span><div>Daily puzzle<br><span style="color:var(--gold);font-size:12px;font-weight:600">complete today's!</span></div></div>
+    </div>
+  </div>
+  <div class="scrollhint"><span class="mouse"></span> Scroll</div>
+</section>
+
+<!-- ================= STATS ================= -->
+<div class="stats" id="stats">
+  <div class="wrap statrow">
+    <div class="stat reveal"><div class="pic">🎓</div><div class="num"><span class="count" data-target="2500">0</span><i>+</i></div><div class="lbl">Students Trained</div></div>
+    <div class="stat reveal d1"><div class="pic">🏆</div><div class="num"><span class="count" data-target="182">0</span><i>+</i></div><div class="lbl">Tournaments Hosted</div></div>
+    <div class="stat reveal d2"><div class="pic">♟</div><div class="num"><span class="count" data-target="120">0</span><i>+</i></div><div class="lbl">FIDE-Rated Players</div></div>
+    <div class="stat reveal d3"><div class="pic">🌍</div><div class="num"><span class="count" data-target="12">0</span><i>+</i></div><div class="lbl">Countries Reached</div></div>
+  </div>
+</div>
+
+<!-- ================= ACADEMY ================= -->
+<section class="academy" id="academy">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="kicker">The Academy</span>
+      <h2>From your first move to your first FIDE title</h2>
+      <p>Structured courses with video lessons, interactive puzzles, homework, quizzes and an end-of-course certificate.</p>
+    </div>
+    <div class="levels">
+      <div class="level reveal">
+        <span class="badge b-beg">Beginner</span>
+        <div class="pic">♙</div>
+        <h3>Beginner Course</h3>
+        <p>Learn the rules, basic checkmates and how to play your first real game with confidence.</p>
+        <ul class="mods">
+          <li><span class="ck on">✓</span> <b>Board basics</b> &amp; piece movement</li>
+          <li><span class="ck on">✓</span> Check, checkmate &amp; stalemate</li>
+          <li><span class="ck on">✓</span> Basic checkmates</li>
+          <li><span class="ck on">✓</span> First tournament habits</li>
+          <li><span class="ck off">+</span> Intermediate tactics</li>
+        </ul>
+        <a class="link" href="#join">Start learning →</a>
+      </div>
+      <div class="level reveal d1">
+        <span class="badge b-int">Intermediate</span>
+        <div class="pic">♘</div>
+        <h3>Intermediate Course</h3>
+        <p>Master opening principles, tactical motifs and simple endgames that win games.</p>
+        <ul class="mods">
+          <li><span class="ck on">✓</span> <b>Opening principles</b></li>
+          <li><span class="ck on">✓</span> Tactics &amp; combinations</li>
+          <li><span class="ck on">✓</span> King &amp; pawn endgames</li>
+          <li><span class="ck on">✓</span> Positional play basics</li>
+          <li><span class="ck off">+</span> Advanced calculation</li>
+        </ul>
+        <a class="link" href="#join">Level up →</a>
+      </div>
+      <div class="level reveal d2">
+        <span class="badge b-adv">Advanced</span>
+        <div class="pic">♕</div>
+        <h3>Advanced Course</h3>
+        <p>Deep middlegame strategy, precise calculation and tournament preparation for rated players.</p>
+        <ul class="mods">
+          <li><span class="ck on">✓</span> <b>Middlegame strategy</b></li>
+          <li><span class="ck on">✓</span> Calculation training</li>
+          <li><span class="ck on">✓</span> Endgame mastery</li>
+          <li><span class="ck on">✓</span> Opening repertoires</li>
+          <li><span class="ck on">✓</span> Game analysis &amp; review</li>
+        </ul>
+        <a class="link" href="#join">Go deeper →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PUZZLES ================= -->
+<section class="puzzles" id="puzzles">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="kicker">Train Your Brain</span>
+      <h2>Puzzles that make you sharper</h2>
+      <p>Daily puzzles, Puzzle Rush, timed battles and streaks — with a leaderboard that never sleeps.</p>
+    </div>
+    <div class="puzzlegrid">
+      <div class="puzzlecard reveal">
+        <div class="dailypuzzle">
+          <div class="miniboard"><svg id="puzzleboard" viewBox="0 0 400 400"></svg></div>
+          <div class="meta">
+            <h4>♟ Daily Puzzle</h4>
+            <h3>White to move — find the mate in 2</h3>
+            <div class="diff">
+              <span>Beginner</span><span>Intermediate</span><span class="on">Advanced</span><span>Master</span>
+            </div>
+            <a class="btn btn-primary btn-sm" href="#join">Solve the puzzle</a>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="modegrid">
+          <div class="mode reveal"><span class="mi" style="background:rgba(34,197,94,.14);color:var(--green)">⚡</span><div><h4>Puzzle Rush</h4><p>Solve as many as you can in 5 minutes</p></div></div>
+          <div class="mode reveal d1"><span class="mi" style="background:rgba(96,165,250,.14);color:#60a5fa">⚔️</span><div><h4>Puzzle Battle</h4><p>Head-to-head, fastest solver wins</p></div></div>
+          <div class="mode reveal d2"><span class="mi" style="background:rgba(245,185,63,.14);color:var(--gold)">🔥</span><div><h4>Puzzle Streak</h4><p>One wrong answer and it's over</p></div></div>
+          <div class="mode reveal d3"><span class="mi" style="background:rgba(248,113,113,.14);color:var(--red)">🏆</span><div><h4>Puzzle Leaderboard</h4><p>Climb the ranks, earn bragging rights</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TOURNAMENTS ================= -->
+<section class="tournaments" id="tournaments">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="kicker">Compete</span>
+      <h2>Upcoming tournaments</h2>
+      <p>Swiss, round-robin and knockout — with live standings, pairings and full broadcast on Prochess Live.</p>
+    </div>
+
+    <div class="tgrid">
+      <div class="tcard reveal">
+        <div class="cdrow" data-deadline="+12d 09:00:00">
+          <div class="cd"><b class="cd-d">00</b><span>Days</span></div>
+          <div class="cd"><b class="cd-h">00</b><span>Hrs</span></div>
+          <div class="cd"><b class="cd-m">00</b><span>Min</span></div>
+          <div class="cd"><b class="cd-s">00</b><span>Sec</span></div>
+        </div>
+        <div class="thead">
+          <h3>Blazing Kings Monthly Rapid Championship</h3>
+          <span class="livebadge"><span class="dot"></span> Registering</span>
+        </div>
+        <div class="tmeta">
+          <div class="m"><b>Rapid 10+0</b><span>Time control</span></div>
+          <div class="m"><b>Lagos, Nigeria</b><span>Venue</span></div>
+          <div class="m"><b>₦150,000</b><span>Prize pool</span></div>
+        </div>
+        <div class="tfoot"><span>Open · all ages · 6 rounds</span><span class="prize">🥇 ₦60,000</span></div>
+        <a class="btn btn-primary regbtn" href="#join">Register now</a>
+      </div>
+
+      <div class="tcard reveal d1">
+        <div class="cdrow" data-deadline="+26d 10:00:00">
+          <div class="cd"><b class="cd-d">00</b><span>Days</span></div>
+          <div class="cd"><b class="cd-h">00</b><span>Hrs</span></div>
+          <div class="cd"><b class="cd-m">00</b><span>Min</span></div>
+          <div class="cd"><b class="cd-s">00</b><span>Sec</span></div>
+        </div>
+        <div class="thead">
+          <h3>Prochess Summer Camp Championship</h3>
+          <span class="livebadge" style="color:#fcd34d;background:rgba(245,185,63,.13);border-color:rgba(245,185,63,.35)"><span class="dot" style="background:var(--gold)"></span> Juniors</span>
+        </div>
+        <div class="tmeta">
+          <div class="m"><b>Standard 60+30</b><span>Time control</span></div>
+          <div class="m"><b>Abuja, Nigeria</b><span>Venue</span></div>
+          <div class="m"><b>₦250,000</b><span>Prize pool</span></div>
+        </div>
+        <div class="tfoot"><span>U8 · U12 · U16 sections</span><span class="prize">🥇 ₦100,000</span></div>
+        <a class="btn btn-ghost regbtn" href="#join">View details</a>
+      </div>
+    </div>
+
+    <div class="livestrip reveal" id="community" style="margin-top:46px">
+      <div class="ls-ic">♞</div>
+      <div>
+        <h3>Prochess Live — watch every move as it happens</h3>
+        <p>Multi-board broadcasts with evaluation bar, chat, commentary and full stream archive. Powered by our ChessStream engine, embedded right into Prochess.</p>
+      </div>
+      <a class="btn btn-gold" href="tournament.html">▶ Watch live games</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SUMMER CAMP ================= -->
+<section class="camp" id="camp">
+  <div class="wrap campgrid">
+    <div class="reveal">
+      <span class="kicker">Holiday Program · NCF &amp; FIDE Affiliated</span>
+      <h2>Prochess Summer Camp 2026</h2>
+      <p>Three weeks of chess immersion at 38 Ifelodun Street, Orogun, Ibadan — 10th–28th August, 9am–1:30pm, weekdays. Every camper leaves with a certificate, a camp T-shirt and a FIDE rating from the final-day tournament.</p>
+      <ul class="features">
+        <li><span class="ck on">✓</span> Certificate of completion</li>
+        <li><span class="ck on">✓</span> Free camp T-shirt</li>
+        <li><span class="ck on">✓</span> FIDE-rated tournament on the final day</li>
+        <li><span class="ck on">✓</span> Daily coaching · 9am–1:30pm</li>
+        <li><span class="ck on">✓</span> NCF &amp; FIDE affiliated</li>
+        <li><span class="ck on">✓</span> Limited seats — call to reserve</li>
+      </ul>
+      <div class="plans">
+        <div class="plan">
+          <h4>Per Week</h4>
+          <div class="price">₦8,000 <small>/ week</small></div>
+          <ul>
+            <li><span class="ck on">✓</span> 5 days of coaching</li>
+            <li><span class="ck on">✓</span> 9am–1:30pm weekdays</li>
+            <li><span class="ck on">✓</span> Certificate of completion</li>
+          </ul>
+        </div>
+        <div class="plan feat">
+          <span class="flag">Best value</span>
+          <h4>Full Camp · All 3 Weeks</h4>
+          <div class="price">₦20,000 <small>/ 3 weeks</small></div>
+          <ul>
+            <li><span class="ck on">✓</span> All 3 weeks · 10–28 Aug</li>
+            <li><span class="ck on">✓</span> Free Prochess camp T-shirt</li>
+            <li><span class="ck on">✓</span> FIDE-rated tournament on the final day</li>
+          </ul>
+        </div>
+      </div>
+      <a class="btn btn-gold" href="tel:08081635986" style="margin-top:26px">Call 0808 163 5986 to register →</a>
+    </div>
+
+    <div class="schedule reveal d1">
+      <div class="srow"><span class="day">Dates</span><span class="time">10–28 Aug</span><span>Weekdays · 3 weeks</span></div>
+      <div class="srow"><span class="day">Time</span><span class="time">9:00–13:30</span><span>Monday to Friday</span></div>
+      <div class="srow"><span class="day">Venue</span><span class="time">Orogun</span><span>38 Ifelodun Street, Ibadan</span></div>
+      <div class="srow"><span class="day">Register</span><span class="time">Ayodeji</span><span>0808 163 5986</span></div>
+      <div class="srow"><span class="day">Register</span><span class="time">Ayomikun</span><span>0805 517 0872</span></div>
+      <div class="srow"><span class="day">Finale</span><span class="time">28 Aug</span><span>FIDE-rated tournament + prizes</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COACHES ================= -->
+<section id="coaches">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="kicker">Meet the Team</span>
+      <h2>Featured coaches</h2>
+      <p>The people running Prochess — from the classroom to the boardroom.</p>
+    </div>
+    <div class="coachgrid">
+      <div class="coach reveal">
+        <div class="avatar">♔</div>
+        <h3>Adeyemi O. Ayodeji</h3>
+        <div class="role">Chief Operations Officer</div>
+        <div class="rating">📞 0810 042 1852</div>
+        <div class="specs"><span>Operations</span><span>Tournaments</span></div>
+        <a class="btn btn-ghost btn-sm" href="tel:08100421852">Call the office</a>
+      </div>
+      <div class="coach reveal d1">
+        <div class="avatar">♘</div>
+        <h3>Olumide Komolafe</h3>
+        <div class="role">Head Trainer</div>
+        <div class="rating">📞 0815 660 7576</div>
+        <div class="specs"><span>Coaching</span><span>Training</span></div>
+        <a class="btn btn-ghost btn-sm" href="tel:08156607576">Book a lesson</a>
+      </div>
+      <div class="coach reveal d2">
+        <div class="avatar">♗</div>
+        <h3>Esan Faith Toluwalase</h3>
+        <div class="role">Head of School Partnerships</div>
+        <div class="rating">📞 0903 551 9574</div>
+        <div class="specs"><span>Schools</span><span>Outreach</span></div>
+        <a class="btn btn-ghost btn-sm" href="tel:09035519574">Partner with us</a>
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--muted);margin-top:26px">
+      Founded by <b style="color:var(--text)">Olalekan Adeyemi</b> — CEO, Prochess Academy, appointed by FIDE to
+      launch the <b style="color:var(--text)">Infinite Chess Project</b> (chess for children with autism) in Nigeria.
+    </p>
+  </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="testi" id="testimonials">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="kicker">Success Stories</span>
+      <h2>What our community says</h2>
+    </div>
+    <div class="tcarousel reveal">
+      <button class="tarrows prev" aria-label="Previous">‹</button>
+      <button class="tarrows next" aria-label="Next">›</button>
+      <div class="tslide active">
+        <div class="quote">My son joined at 8 with zero experience. In one year he won his school championship and earned his first FIDE rating. The camp and the online lessons changed everything.</div>
+        <div class="who"><span class="avatar">👩🏾</span><div><b>Mrs. Adaeze Okafor</b><span>Parent of U10 rated player</span></div></div>
+      </div>
+      <div class="tslide">
+        <div class="quote">The puzzle streak got me hooked. I do my 10 puzzles every morning before school — my tactics rating jumped 400 points in three months.</div>
+        <div class="who"><span class="avatar">♞</span><div><b>David Emmanuel, 14</b><span>Prochess Academy student</span></div></div>
+      </div>
+      <div class="tslide">
+        <div class="quote">As a coach, the live broadcast tools are amazing. I ran my club's rapid championship on Prochess and parents watched every round live from home. Incredible.</div>
+        <div class="who"><span class="avatar">♜</span><div><b>Coach Tunde Bakare</b><span>Chess club director, Ibadan</span></div></div>
+      </div>
+      <div class="tslide">
+        <div class="quote">The endgame course finally made me understand K+P endgames. I went from blundering them every week to converting wins — my coach noticed immediately.</div>
+        <div class="who"><span class="avatar">♛</span><div><b>Halima Bello, 16</b><span>Advanced course student</span></div></div>
+      </div>
+      <div class="tdots"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BLOG ================= -->
+<section id="blog">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="kicker">News &amp; Insights</span>
+      <h2>From the blog</h2>
+    </div>
+    <div class="bloggrid">
+      <div class="card post reveal">
+        <div class="cover" style="background:linear-gradient(135deg,#1e3a8a,#2563eb)"><span class="glyph">♞</span></div>
+        <div class="body">
+          <span class="cat">Tournament Report</span>
+          <h3>Nigeria Chess Olympiad Qualifiers: all 11 rounds covered</h3>
+          <p>Every game, every upset — full report from the 2026 qualifiers with annotated decisive games.</p>
+          <div class="meta"><span>📅 Mar 14, 2026</span><span>⏱ 6 min read</span></div>
+        </div>
+      </div>
+      <div class="card post reveal d1">
+        <div class="cover" style="background:linear-gradient(135deg,#065f46,#10b981)"><span class="glyph">♛</span></div>
+        <div class="body">
+          <span class="cat">Opening Guide</span>
+          <h3>The London System for juniors: a complete roadmap</h3>
+          <p>A step-by-step guide to the easiest solid opening for young players — with model games.</p>
+          <div class="meta"><span>📅 Feb 28, 2026</span><span>⏱ 8 min read</span></div>
+        </div>
+      </div>
+      <div class="card post reveal d2">
+        <div class="cover" style="background:linear-gradient(135deg,#7c2d12,#f59e0b)"><span class="glyph">♘</span></div>
+        <div class="body">
+          <span class="cat">Training Tips</span>
+          <h3>Why every kid should do 20 minutes of puzzles a day</h3>
+          <p>Pattern recognition is the single fastest way to improve — here's the science and the routine.</p>
+          <div class="meta"><span>📅 Feb 10, 2026</span><span>⏱ 5 min read</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="ctaband" id="join">
+  <div class="wrap reveal">
+    <span class="kicker">Start Today</span>
+    <h2>Your chess journey starts with one move.</h2>
+    <p>Join the academy free — get your first course, daily puzzles and a seat at the next tournament.</p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="#" style="padding:15px 32px;font-size:16px">Create free account</a>
+      <a class="btn btn-ghost" href="#coaches" style="padding:15px 32px;font-size:16px">Talk to a coach</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div class="fcol">
+        <a class="logo" href="index.html"><img src="prochess-logo.png" alt="PROCHESS" style="width:40px;height:40px;border-radius:12px;object-fit:contain;background:#fff;padding:3px;box-shadow:0 6px 20px rgba(0,0,0,.45)">Pro<b>chess</b></a>
+        <p>Learn, Play, Stream, and Master Chess. Nigeria's home of chess education, tournaments and live broadcast.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram">◎</a>
+          <a href="#" aria-label="YouTube">▶</a>
+          <a href="#" aria-label="X">𝕏</a>
+          <a href="#" aria-label="WhatsApp">✆</a>
+        </div>
+      </div>
+      <div class="fcol">
+        <h4>Learn</h4>
+        <a href="#academy">Beginner course</a>
+        <a href="#academy">Intermediate course</a>
+        <a href="#academy">Advanced course</a>
+        <a href="#puzzles">Daily puzzles</a>
+        <a href="#puzzles">Puzzle rush</a>
+      </div>
+      <div class="fcol">
+        <h4>Compete</h4>
+        <a href="tournament.html">Upcoming tournaments</a>
+        <a href="https://nigerian-chess-stream.example.com" target="_blank" rel="noopener">▶ Nigerian Chess Stream</a>
+        <a href="tournament.html">Live standings</a>
+        <a href="player.html">Player profiles</a>
+        <a href="dashboard.html">Student dashboard</a>
+        <a href="#camp">Summer camp</a>
+        <a href="#coaches">Coaches</a>
+      </div>
+      <div class="fcol">
+        <h4>Get updates</h4>
+        <p>Tournament announcements, new courses and special offers — straight to your inbox.</p>
+        <form class="news" onsubmit="event.preventDefault();this.querySelector('input').value='Thanks! You are on the list 🎉'">
+          <input type="email" placeholder="Your email" required>
+          <button class="btn btn-primary btn-sm" type="submit">Join</button>
+        </form>
+      </div>
+    </div>
+    <div class="fbar">
+      <span>© 2026 <b>Prochess Academy</b>. All rights reserved.</span>
+      <span>Made with ♟ in Nigeria</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============ SVG chessboard renderer ============ */
+const GLYPHS={k:"♚",q:"♛",r:"♜",b:"♝",n:"♞",p:"♟",K:"♔",Q:"♕",R:"♖",B:"♗",N:"♘",P:"♙"};
+const START="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+function fenToBoard(fen){const rows=fen.split("/");const b=[];for(let r=0;r<8;r++){const row=[];let c=0;for(const ch of rows[r]){if(/\d/.test(ch)){for(let i=0;i<+ch;i++){row.push("");c++;}}else{row.push(ch);c++;}}b.push(row);}return b;}
+function renderBoard(svgId,fen,opts={}){
+  const svg=document.getElementById(svgId);if(!svg)return;
+  const b=fenToBoard(fen);let out="";
+  const cs=opts.size||50;
+  const light=opts.light||"#e8d5b5",dark=opts.dark||"#8b5e3c",brd=opts.border||"#1c2a45";
+  out+=`<rect width="400" height="400" fill="${brd}" rx="8"/>`;
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+    const x=c*cs+2,y=r*cs+2;
+    out+=`<rect x="${x}" y="${y}" width="${cs}" height="${cs}" fill="${(r+c)%2?dark:light}"/>`;
+  }
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+    const p=b[r][c];if(!p)continue;
+    const x=c*cs+2,y=r*cs+2;
+    const white=p===p.toUpperCase();
+    out+=`<text x="${x+cs/2}" y="${y+cs/2+4}" font-size="${cs*0.62}" text-anchor="middle" dominant-baseline="middle"
+      style="font-family:var(--piece)" fill="${white?"#fff":"#16181c"}" stroke="${white?"#16181c":"#fff"}" stroke-width="1">${GLYPHS[p]}</text>`;
+  }
+  svg.innerHTML=out;
+}
+renderBoard("heroboard",START,{light:"#e9d8b8",dark:"#8a5f3c"});
+renderBoard("puzzleboard","r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R",{light:"#e9d8b8",dark:"#8a5f3c"});
+
+/* ============ nav ============ */
+const header=document.getElementById("header");
+addEventListener("scroll",()=>header.classList.toggle("scrolled",scrollY>10),{passive:true});
+const burger=document.getElementById("burger"),mm=document.getElementById("mobilemenu");
+burger.addEventListener("click",()=>mm.classList.toggle("open"));
+
+/* ============ countdowns ============ */
+function startCountdowns(){
+  const pad=n=>String(n).padStart(2,"0");
+  document.querySelectorAll("[data-deadline]").forEach(el=>{
+    const spec=el.dataset.deadline; // e.g. "+12d 09:00:00"
+    const m=spec.match(/\+(\d+)d\s+(\d+):(\d+):(\d+)/);
+    const now=new Date();
+    const target=new Date(now.getTime());
+    target.setDate(target.getDate()+ (+m[1]));
+    target.setHours(+m[2],+m[3],+m[4],0);
+    const els={d:el.querySelector(".cd-d"),h:el.querySelector(".cd-h"),m:el.querySelector(".cd-m"),s:el.querySelector(".cd-s")};
+    function tick(){
+      let diff=target-now;if(diff<0)diff=0;
+      const d=Math.floor(diff/864e5),h=Math.floor(diff/36e5)%24,mi=Math.floor(diff/6e4)%60,s=Math.floor(diff/1e3)%60;
+      els.d.textContent=pad(d);els.h.textContent=pad(h);els.m.textContent=pad(mi);els.s.textContent=pad(s);
+    }
+    tick();setInterval(tick,1000);
+  });
+  // hero chip countdown
+  const chip=document.getElementById("chip-count");
+  if(chip){
+    const t=new Date();t.setDate(t.getDate()+12);t.setHours(9,0,0,0);
+    setInterval(()=>{
+      let d=t-new Date();if(d<0)d=0;
+      const dd=Math.floor(d/864e5),hh=Math.floor(d/36e5)%24,mi=Math.floor(d/6e4)%60;
+      chip.textContent=`${dd}d ${pad(hh)}:${pad(mi)}`;
+    },1000);
+  }
+}
+startCountdowns();
+
+/* ============ stat counters ============ */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(!en.isIntersecting)return;
+    const el=en.target;io.unobserve(el);
+    const target=+el.dataset.target,dur=1600,t0=performance.now();
+    (function step(t){
+      const p=Math.min((t-t0)/dur,1),e=1-Math.pow(1-p,3);
+      el.textContent=Math.floor(target*e).toLocaleString();
+      if(p<1)requestAnimationFrame(step);
+    })(t0);
+  });
+},{threshold:.5});
+document.querySelectorAll(".count").forEach(el=>io.observe(el));
+
+/* ============ scroll reveal ============ */
+const io2=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add("in");io2.unobserve(en.target);}});
+},{threshold:.12});
+document.querySelectorAll(".reveal").forEach(el=>io2.observe(el));
+
+/* ============ testimonial carousel ============ */
+const slides=[...document.querySelectorAll(".tslide")];
+const dotsBox=document.querySelector(".tdots");
+let idx=0,timer;
+slides.forEach((_,i)=>{
+  const b=document.createElement("button");
+  if(i===0)b.classList.add("on");
+  b.addEventListener("click",()=>{idx=i;show();reset();});
+  dotsBox.appendChild(b);
+});
+function show(){
+  slides.forEach((s,i)=>s.classList.toggle("active",i===idx));
+  [...dotsBox.children].forEach((d,i)=>d.classList.toggle("on",i===idx));
+}
+function next(){idx=(idx+1)%slides.length;show();}
+function prev(){idx=(idx-1+slides.length)%slides.length;show();}
+document.querySelector(".tarrows.next").addEventListener("click",()=>{next();reset();});
+document.querySelector(".tarrows.prev").addEventListener("click",()=>{prev();reset();});
+function reset(){clearInterval(timer);timer=setInterval(next,6000);}
+reset();
+
+/* ============ puzzle difficulty selector ============ */
+document.querySelectorAll(".diff span").forEach(sp=>{
+  sp.addEventListener("click",()=>{
+    document.querySelectorAll(".diff span").forEach(x=>x.classList.remove("on"));
+    sp.classList.add("on");
+  });
+});
+</script>
+</body>
+</html>

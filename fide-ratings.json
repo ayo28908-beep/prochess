@@ -1,0 +1,138 @@
+{
+ "source": "FIDE combined rating list (players_list_foa.txt)",
+ "generated": "2026-08-05",
+ "players": {
+  "Abdulraheem, Abdulrahman Akintoye": {
+   "fideId": "8504563",
+   "name": "ABDULRAHEEM, Abdulrahman Akintoye",
+   "fed": "NGR",
+   "title": "FM",
+   "standard": 2316,
+   "rapid": 2208,
+   "blitz": 2193,
+   "born": 1993,
+   "exact": true
+  },
+  "Akinseye, Abiola Daniel": {
+   "fideId": "8503010",
+   "name": "AKINSEYE, Abiola Daniel",
+   "fed": "NGR",
+   "title": "FM",
+   "standard": 2154,
+   "rapid": 2150,
+   "blitz": 0,
+   "born": 1989,
+   "exact": true
+  },
+  "Aikhoje, Odion": {
+   "fideId": "8500240",
+   "name": "AIKHOJE, Odion",
+   "fed": "NGR",
+   "title": "IM",
+   "standard": 2246,
+   "rapid": 2292,
+   "blitz": 2229,
+   "born": 1971,
+   "exact": true
+  },
+  "Ekunke, Odey Goodness": {
+   "fideId": "8511888",
+   "name": "EKUNKE, Odey Goodness",
+   "fed": "NGR",
+   "title": "",
+   "standard": 2280,
+   "rapid": 2149,
+   "blitz": 2138,
+   "born": 2011,
+   "exact": true
+  },
+  "Olisa, Tennyson Ewomazino": {
+   "fideId": "8511390",
+   "name": "Olisa, Tennyson Ewomazino",
+   "fed": "NGR",
+   "title": "FM",
+   "standard": 2230,
+   "rapid": 2058,
+   "blitz": 2209,
+   "born": 2003,
+   "exact": true
+  },
+  "Emmanuel, Joy Idara": {
+   "fideId": "8513023",
+   "name": "EMMANUEL, Joy Idara",
+   "fed": "NGR",
+   "title": "",
+   "standard": 2175,
+   "rapid": 2093,
+   "blitz": 2003,
+   "born": 2002,
+   "exact": true
+  },
+  "Eyetonghan, Denyefa Callistus": {
+   "fideId": "8511462",
+   "name": "EYETONGHAN, Denyefa Callistus",
+   "fed": "NGR",
+   "title": "FM",
+   "standard": 2256,
+   "rapid": 2131,
+   "blitz": 2123,
+   "born": 2002,
+   "exact": true
+  },
+  "Okhipo, Bartholomew Emmanuel": {
+   "fideId": "8509069",
+   "name": "OKHIPO, Bartholomew Emmanuel",
+   "fed": "NGR",
+   "title": "",
+   "standard": 2246,
+   "rapid": 2150,
+   "blitz": 2004,
+   "born": 1997,
+   "exact": true
+  },
+  "Kigigha, Bomo Lovet": {
+   "fideId": "8500037",
+   "name": "Kigigha, Bomo Lovet",
+   "fed": "NGR",
+   "title": "FM",
+   "standard": 2287,
+   "rapid": 2280,
+   "blitz": 2248,
+   "born": 1982,
+   "exact": true
+  },
+  "Lapite, Oluwadurotimi Opeoluwa": {
+   "fideId": "8503648",
+   "name": "LAPITE, Oluwadurotimi Opeoluwa",
+   "fed": "NGR",
+   "title": "CM",
+   "standard": 2228,
+   "rapid": 2209,
+   "blitz": 2195,
+   "born": 1995,
+   "exact": true
+  },
+  "Nyuima, Tersee Ferdinand": {
+   "fideId": "8515263",
+   "name": "NYUIMA, Tersee Ferdinand",
+   "fed": "NGR",
+   "title": "",
+   "standard": 2174,
+   "rapid": 2099,
+   "blitz": 1976,
+   "born": 2007,
+   "exact": true
+  },
+  "Balogun, Oluwafemi Daniel": {
+   "fideId": "8501246",
+   "name": "Balogun, Oluwafemi Daniel",
+   "fed": "NGR",
+   "title": "IM",
+   "standard": 2220,
+   "rapid": 2246,
+   "blitz": 2178,
+   "born": 1987,
+   "exact": true
+  }
+ }
+}
