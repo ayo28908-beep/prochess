@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-sans), "Inter", system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-serif), "Playfair Display", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-border: hsl(214.3, 31.8%, 91.4%);
+  --color-input: hsl(214.3, 31.8%, 91.4%);
+  --color-ring: hsl(142, 71%, 24%);
+  --color-background: hsl(0, 0%, 100%);
+  --color-foreground: hsl(222.2, 84%, 4.9%);
+  --color-primary: hsl(142, 71%, 24%);
+  --color-primary-foreground: hsl(0, 0%, 100%);
+  --color-secondary: hsl(210, 40%, 96.1%);
+  --color-secondary-foreground: hsl(222.2, 47.4%, 11.2%);
+  --color-destructive: hsl(0, 84.2%, 60.2%);
+  --color-destructive-foreground: hsl(210, 40%, 98%);
+  --color-muted: hsl(210, 40%, 96.1%);
+  --color-muted-foreground: hsl(215.4, 16.3%, 46.9%);
+  --color-accent: hsl(210, 40%, 96.1%);
+  --color-accent-foreground: hsl(222.2, 47.4%, 11.2%);
+  --color-popover: hsl(0, 0%, 100%);
+  --color-popover-foreground: hsl(222.2, 84%, 4.9%);
+  --color-card: hsl(0, 0%, 100%);
+  --color-card-foreground: hsl(222.2, 84%, 4.9%);
+  --radius: 0.5rem;
+
+  --color-green-50: #f0fdf4;
+  --color-green-100: #dcfce7;
+  --color-green-200: #bbf7d0;
+  --color-green-300: #86efac;
+  --color-green-400: #4ade80;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+  --color-green-800: #166534;
+  --color-green-900: #14532d;
+  --color-green-950: #052e16;
+
+  --color-gold-300: #FCD34D;
+  --color-gold-400: #D4AF37;
+  --color-gold-500: #C5A028;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
