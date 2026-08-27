@@ -123,18 +123,30 @@ export interface CampRegistration {
   registered_at: string;
 }
 
+export interface LichessBroadcastRound {
+  id: string;
+  name: string;
+  slug?: string;
+  startsAt?: number;
+  finished?: boolean;
+  finishedAt?: number;
+  url?: string;
+  nbGames?: number;
+}
+
 export interface LichessBroadcast {
   tour: {
-    name: string;
-    description?: string;
-    tier?: number;
-  };
-  round: {
-    name: string;
     id: string;
-    startsAt?: string;
+    name: string;
+    slug?: string;
+    info?: Record<string, string>;
+    tier?: number;
+    url?: string;
+    dates?: number[];
   };
-  nbGames: number;
+  rounds: LichessBroadcastRound[];
+  defaultRoundId?: string;
+  group?: string;
 }
 
 export interface LichessGame {

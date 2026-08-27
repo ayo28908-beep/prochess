@@ -6,41 +6,22 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RefreshCw, ExternalLink, Play, AlertCircle, Radio } from "lucide-react";
+import { RefreshCw, AlertCircle, Play, Radio } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const Chessboard = dynamic(() => import("react-chessboard").then((m) => m.Chessboard), { ssr: false });
 
 import type { LichessBroadcast, LichessGame } from "@/lib/types";
+import { getBestRound } from "@/lib/lichess";
 
 export default function LivePage() {
   const [broadcasts, setBroadcasts] = useState<{ featured: LichessBroadcast[]; upcoming: LichessBroadcast[]; recent: LichessBroadcast[] }>({ featured: [], upcoming: [], recent: [] });
-  const [selectedRound, setSelectedRound] = useState<string | null>(null);
+  const [selectedBroadcast, setSelectedBroadcast] = useState<LichessBroadcast | null>(null);
+  const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
   const [games, setGames] = useState<LichessGame[]>([]);
   const [loading, setLoading] = useState(true);
   const [gamesLoading, setGamesLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const loadBroadcasts = useCallback(async () => {
-    try {
-      const res = await fetch("/api/lichess/broadcasts");
-      const data = await res.json();
-      setBroadcasts(data);
-
-      // Auto-select first round from featured broadcast
-      if (data.featured?.length > 0) {
-        const round = data.featured[0].round;
-        if (round?.id) {
-          setSelectedRound(round.id);
-          loadGames(round.id);
-        }
-      }
-      setLoading(false);
-    } catch {
-      setError("Failed to load broadcasts. Please try again.");
-      setLoading(false);
-    }
-  }, []);
 
   const loadGames = async (roundId: string) => {
     setGamesLoading(true);
@@ -54,6 +35,31 @@ export default function LivePage() {
     setGamesLoading(false);
   };
 
+  const loadBroadcasts = useCallback(async () => {
+    try {
+      const res = await fetch("/api/lichess/broadcasts");
+      const data = await res.json();
+      setBroadcasts(data);
+
+      // Auto-select first featured/recent broadcast
+      if (!selectedBroadcast) {
+        const first = data.featured?.[0] ?? data.recent?.[0];
+        if (first) {
+          setSelectedBroadcast(first);
+          const round = getBestRound(first);
+          if (round) {
+            setSelectedRoundId(round.id);
+            loadGames(round.id);
+          }
+        }
+      }
+      setLoading(false);
+    } catch {
+      setError("Failed to load broadcasts. Please try again.");
+      setLoading(false);
+    }
+  }, [selectedBroadcast]);
+
   useEffect(() => {
     loadBroadcasts();
     const interval = setInterval(loadBroadcasts, 30000);
@@ -61,14 +67,15 @@ export default function LivePage() {
   }, [loadBroadcasts]);
 
   useEffect(() => {
-    if (selectedRound) {
-      loadGames(selectedRound);
-      const interval = setInterval(() => loadGames(selectedRound), 5000);
+    if (selectedRoundId) {
+      loadGames(selectedRoundId);
+      const interval = setInterval(() => loadGames(selectedRoundId), 5000);
       return () => clearInterval(interval);
     }
-  }, [selectedRound]);
+  }, [selectedRoundId]);
 
   const allBroadcasts = [...broadcasts.featured, ...broadcasts.recent, ...broadcasts.upcoming];
+  const currentRounds = selectedBroadcast?.rounds ?? [];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -79,7 +86,7 @@ export default function LivePage() {
             Real-time chess games from tournaments worldwide via Lichess
           </p>
         </div>
-        <Button variant="outline" onClick={loadBroadcasts}>
+        <Button variant="outline" onClick={() => { setLoading(true); loadBroadcasts(); }}>
           <RefreshCw className="mr-2 h-4 w-4" /> Refresh
         </Button>
       </div>
@@ -107,31 +114,60 @@ export default function LivePage() {
               <CardContent className="flex items-center gap-3 p-6">
                 <AlertCircle className="h-5 w-5 text-red-500" />
                 <p className="text-sm text-red-700">{error}</p>
-                <Button size="sm" variant="outline" onClick={loadBroadcasts}>Retry</Button>
+                <Button size="sm" variant="outline" onClick={() => { setError(null); loadBroadcasts(); }}>Retry</Button>
               </CardContent>
             </Card>
           ) : (
             <>
               {/* Broadcast selector */}
-              <div className="mb-6 flex flex-wrap gap-2">
-                {allBroadcasts.map((b) => (
-                  <Button
-                    key={b.round.id}
-                    variant={selectedRound === b.round.id ? "default" : "outline"}
-                    size="sm"
-                    className={selectedRound === b.round.id ? "bg-[#1B5E20] text-white" : ""}
-                    onClick={() => {
-                      setSelectedRound(b.round.id);
-                    }}
-                  >
-                    <Radio className="mr-1 h-3 w-3" />
-                    {b.tour.name}
-                  </Button>
-                ))}
+              <div className="mb-4 flex flex-wrap gap-2">
+                {allBroadcasts.map((b) => {
+                  const round = getBestRound(b);
+                  return (
+                    <Button
+                      key={b.tour.id}
+                      variant={selectedBroadcast?.tour.id === b.tour.id ? "default" : "outline"}
+                      size="sm"
+                      className={selectedBroadcast?.tour.id === b.tour.id ? "bg-[#1B5E20] text-white" : ""}
+                      onClick={() => {
+                        setSelectedBroadcast(b);
+                        if (round) {
+                          setSelectedRoundId(round.id);
+                        }
+                      }}
+                    >
+                      <Radio className="mr-1 h-3 w-3" />
+                      {b.tour.name}
+                      {b.tour.tier && b.tour.tier >= 5 && (
+                        <Badge className="ml-1 bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] px-1">Tier {b.tour.tier}</Badge>
+                      )}
+                    </Button>
+                  );
+                })}
                 {allBroadcasts.length === 0 && (
                   <p className="text-sm text-slate-500">No broadcasts available right now.</p>
                 )}
               </div>
+
+              {/* Round selector */}
+              {currentRounds.length > 0 && (
+                <div className="mb-6 flex flex-wrap gap-1">
+                  {currentRounds.sort((a, b) => (b.startsAt ?? 0) - (a.startsAt ?? 0)).map((r) => (
+                    <button
+                      key={r.id}
+                      onClick={() => setSelectedRoundId(r.id)}
+                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                        selectedRoundId === r.id
+                          ? "bg-[#1B5E20] text-white"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      }`}
+                    >
+                      {r.name}
+                      {r.finished && <span className="ml-1 text-green-200">&#10003;</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Games grid */}
               {gamesLoading && games.length === 0 ? (
@@ -139,7 +175,7 @@ export default function LivePage() {
                   {Array.from({ length: 4 }).map((_, i) => (
                     <Card key={i} className="border-slate-200">
                       <CardContent className="p-4">
-                        <Skeleton className="mb-2 h-40 w-full" />
+                        <Skeleton className="mb-2 h-48 w-full" />
                         <Skeleton className="h-4 w-2/3" />
                       </CardContent>
                     </Card>
@@ -150,7 +186,7 @@ export default function LivePage() {
                   <CardContent className="flex flex-col items-center justify-center py-16 text-center">
                     <Play className="mb-3 h-10 w-10 text-slate-300" />
                     <p className="text-slate-500">No games in this round yet.</p>
-                    <p className="text-xs text-slate-400">Select a different broadcast or round.</p>
+                    <p className="text-xs text-slate-400">Select a different round or broadcast.</p>
                   </CardContent>
                 </Card>
               ) : (
@@ -166,15 +202,21 @@ export default function LivePage() {
 
         <TabsContent value="upcoming" className="mt-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {broadcasts.upcoming.map((b) => (
-              <Card key={b.round.id} className="border-slate-200">
-                <CardContent className="p-4">
-                  <h3 className="font-serif font-bold text-slate-900">{b.tour.name}</h3>
-                  <p className="mt-1 text-sm text-slate-500">{b.round.name}</p>
-                  <Badge className="mt-2 bg-amber-50 text-amber-700">Upcoming</Badge>
-                </CardContent>
-              </Card>
-            ))}
+            {broadcasts.upcoming.map((b) => {
+              const round = getBestRound(b);
+              return (
+                <Card key={b.tour.id} className="border-slate-200">
+                  <CardContent className="p-4">
+                    <h3 className="font-serif font-bold text-slate-900">{b.tour.name}</h3>
+                    <p className="mt-1 text-sm text-slate-500">{b.tour.info?.format}</p>
+                    {b.tour.info?.location && (
+                      <p className="text-xs text-slate-400">{b.tour.info.location}</p>
+                    )}
+                    <Badge className="mt-2 bg-amber-50 text-amber-700">Upcoming</Badge>
+                  </CardContent>
+                </Card>
+              );
+            })}
             {broadcasts.upcoming.length === 0 && (
               <p className="text-sm text-slate-500">No upcoming broadcasts.</p>
             )}
