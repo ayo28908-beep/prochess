@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { MapPin, Phone, Mail, ExternalLink } from "lucide-react";
+import Image from "next/image";
+import { MapPin, Phone, Mail, ExternalLink, Play } from "lucide-react";
 
 const quickLinks = [
   { href: "/courses", label: "Courses" },
   { href: "/puzzles", label: "Puzzles" },
   { href: "/tournaments", label: "Tournaments" },
-  { href: "/live", label: "Live Broadcasts" },
   { href: "/summer-camp", label: "Summer Camp" },
   { href: "/players", label: "Player Directory" },
+  { href: "/about", label: "About Us" },
 ];
 
 export default function Footer() {
@@ -17,16 +18,21 @@ export default function Footer() {
         <div className="grid gap-8 md:grid-cols-3">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2">
-              <svg
-                viewBox="0 0 32 32"
-                className="h-7 w-7 text-[#1B5E20]"
-                fill="currentColor"
-              >
-                <path d="M16 2C14.5 2 13 3 13 4.5V6H10V4.5C10 3 8.5 2 7 2S4 3 4 4.5V6L2 8V12H30V8L28 6V4.5C28 3 26.5 2 25 2S22 3 22 4.5V6H19V4.5C19 3 17.5 2 16 2ZM4 14V28C4 29.1 4.9 30 6 30H26C27.1 30 28 29.1 28 28V14H4ZM10 26H8V18H10V26ZM16 26H14V16H16V26ZM22 26H20V20H22V26Z" />
-              </svg>
-              <span className="text-lg font-bold text-slate-900">Prochess</span>
-            </div>
+            <Link href="/" className="flex items-center gap-2.5">
+              <Image
+                src="/images/logo.png"
+                alt="Prochess"
+                width={36}
+                height={33}
+                className="h-9 w-auto"
+              />
+              <div>
+                <span className="text-lg font-bold text-slate-900">Prochess</span>
+                <span className="block text-[10px] font-medium uppercase tracking-widest text-[#D4AF37]">
+                  Chess Academy
+                </span>
+              </div>
+            </Link>
             <p className="mt-3 text-sm leading-relaxed text-slate-500">
               Nigeria&apos;s premier chess academy. FIDE Infinite Chess Project partner.
               NCF affiliated. Building champions across Nigeria.
@@ -47,6 +53,18 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <a
+                  href="https://chessstream-africa.vercel.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-sm text-slate-500 transition-colors hover:text-orange-600"
+                >
+                  <Play className="h-3 w-3" />
+                  Live Broadcasts
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -96,13 +114,13 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-4">
               <Link
-                href="https://lichess.org"
+                href="https://chessstream-africa.vercel.app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-xs text-slate-400 transition-colors hover:text-[#1B5E20]"
+                className="flex items-center gap-1 text-xs text-slate-400 transition-colors hover:text-orange-600"
               >
                 <ExternalLink className="h-3 w-3" />
-                Lichess Partner
+                ChessStream Africa
               </Link>
               <Link
                 href="https://www.fide.com"

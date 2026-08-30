@@ -18,11 +18,11 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "Prochess - Nigeria's Premier Chess Academy",
+    default: "Prochess — Nigeria's Premier Chess Academy",
     template: "%s | Prochess",
   },
   description:
-    "Learn chess with Nigeria's best coaches. FIDE Infinite Chess Project partner. Courses, tournaments, puzzles, and live broadcasts.",
+    "Learn chess with Nigeria's best coaches. FIDE Infinite Chess Project partner. Structured courses, live tournaments, daily puzzles.",
   keywords: [
     "chess",
     "Nigeria",
@@ -30,7 +30,26 @@ export const metadata: Metadata = {
     "chess academy",
     "chess tournament",
     "learn chess",
+    "Prochess",
+    "Ibadan",
   ],
+  openGraph: {
+    title: "Prochess — Nigeria's Premier Chess Academy",
+    description:
+      "Learn chess with Nigeria's best coaches. FIDE Infinite Chess Project partner.",
+    url: "https://prochess-lovat.vercel.app",
+    siteName: "Prochess",
+    images: [{ url: "/images/logo.png", width: 1110, height: 1028, alt: "Prochess" }],
+    locale: "en_NG",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Prochess — Nigeria's Premier Chess Academy",
+    description:
+      "Learn chess with Nigeria's best coaches. FIDE Infinite Chess Project partner.",
+    images: ["/images/logo.png"],
+  },
 };
 
 export default function RootLayout({
