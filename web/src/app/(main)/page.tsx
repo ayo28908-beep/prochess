@@ -30,15 +30,15 @@ import { supabase } from "@/lib/supabase/client";
 import type { Tournament, Profile } from "@/lib/types";
 
 const eventPhotos = [
-  "/images/photo_2026-08-08_08-46-37.jpg",
-  "/images/photo_2026-08-08_08-46-41.jpg",
-  "/images/photo_2026-08-08_08-46-43.jpg",
-  "/images/photo_2026-08-08_08-46-47.jpg",
-  "/images/photo_2026-08-08_08-46-50.jpg",
-  "/images/photo_2026-08-26_13-44-03.jpg",
-  "/images/photo_2026-08-26_13-48-28.jpg",
-  "/images/photo_2026-08-27_10-05-25.jpg",
-  "/images/photo_2026-08-27_10-08-09.jpg",
+  "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=800&q=80", // chess tournament hall
+  "https://images.unsplash.com/photo-1586165368502-1bad548bc9f5?w=800&q=80", // chess pieces close-up
+  "https://images.unsplash.com/photo-1560174038-da43ac74f01b?w=800&q=80", // kids playing chess
+  "https://images.unsplash.com/photo-1523875194681-bedd468c58bf?w=800&q=80", // chess board overhead
+  "https://images.unsplash.com/photo-1611195974226-a6a9be9dd763?w=800&q=80", // chess clock
+  "https://images.unsplash.com/photo-1580541631950-7282082b03fe?w=800&q=80", // chess strategy
+  "https://images.unsplash.com/photo-1583118643789-13398c837255?w=800&q=80", // chess match
+  "https://images.unsplash.com/photo-1615361200141-f45040f367be?w=800&q=80", // chess competition
+  "https://images.unsplash.com/photo-1577401132921-cb39bb0adcff?w=800&q=80", // chess training
 ];
 
 const benefits = [
