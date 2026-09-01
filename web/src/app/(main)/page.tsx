@@ -65,6 +65,7 @@ export default function HomePage() {
 
   useEffect(() => {
     async function fetchData() {
+      try {
       const [tournRes, coachRes] = await Promise.all([
         supabase
           .from("tournaments")
@@ -78,9 +79,9 @@ export default function HomePage() {
           .eq("role", "coach")
           .order("full_name"),
       ]);
-      setTournaments(tournRes.data ?? []);
+      const raw = tournRes.data ?? []; const seen = new Set(); setTournaments(raw.filter((t: any) => { if (seen.has(t.name)) return false; seen.add(t.name); return true; }));
       setCoaches(coachRes.data ?? []);
-      setLoading(false);
+      } catch(e) { console.error("Load error:",e); } finally { setLoading(false); }
     }
     fetchData();
   }, []);
