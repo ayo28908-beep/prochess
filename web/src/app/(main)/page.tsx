@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -50,58 +50,12 @@ const benefits = [
 
 const testimonials = [
   {
-    text: "My son joined Prochess 6 months ago and his concentration in school has improved massively. The coaches really care.",
-    name: "Mrs. Adewale",
-    detail: "Parent",
-  },
-  {
-    text: "I went from not knowing how the pieces move to winning my first tournament. Prochess made it fun.",
-    name: "Chidi, age 12",
-    detail: "Student",
-  },
-  {
     text: "The structure of the courses is what sets Prochess apart. It's not just playing — it's real learning.",
-    name: "Coach Ayodeji",
+    name: "Ayodeji",
     detail: "Head Coach",
   },
 ];
 
-function AnimatedCounter({ target, duration = 2000 }: { target: number; duration?: number }) {
-  const [count, setCount] = useState(0);
-  const [started, setStarted] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !started) {
-          setStarted(true);
-        }
-      },
-      { threshold: 0.3 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [started]);
-
-  useEffect(() => {
-    if (!started) return;
-    let start = 0;
-    const increment = target / (duration / 16);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [started, target, duration]);
-
-  return <div ref={ref} className="tabular-nums">{count.toLocaleString()}+</div>;
-}
 
 export default function HomePage() {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -243,25 +197,25 @@ export default function HomePage() {
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             <div className="text-center">
               <div className="text-3xl font-bold text-[#1B5E20]">
-                <AnimatedCounter target={500} />
+                500+
               </div>
               <div className="mt-1 text-sm text-slate-500">Students Trained</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-[#1B5E20]">
-                <AnimatedCounter target={20} />
+                20+
               </div>
               <div className="mt-1 text-sm text-slate-500">Tournaments Hosted</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-[#1B5E20]">
-                <AnimatedCounter target={22} />
+                22+
               </div>
               <div className="mt-1 text-sm text-slate-500">Schools Reached</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-[#1B5E20]">
-                <AnimatedCounter target={4} />
+                4+
               </div>
               <div className="mt-1 text-sm text-slate-500">Years Running</div>
             </div>
