@@ -1,0 +1,29 @@
+# Prochess Academy
+
+Nigeria's premier chess academy. FIDE Infinite Chess Project partner.
+
+## About
+Prochess Academy provides structured chess education from beginner to master level. We offer courses, tournaments, puzzles, and live broadcasts through our partnership with ChessStream Africa.
+
+## Features
+- Structured chess courses (Beginner, Intermediate, Advanced)
+- Daily puzzles with interactive chessboard
+- Tournament registration and management
+- Player directory with FIDE profiles
+- Summer camp programs
+- Live broadcasts via ChessStream Africa
+
+## Location
+38 Ifelodun Street, Orogun, Ibadan, Nigeria
+
+## Contact
+- Phone: 0808 163 5986, 0805 517 0872
+- Email: info@prochess.ng
+
+## Links
+- Home: https://prochess-lovat.vercel.app
+- Courses: https://prochess-lovat.vercel.app/courses
+- Tournaments: https://prochess-lovat.vercel.app/tournaments
+- Puzzles: https://prochess-lovat.vercel.app/puzzles
+- About: https://prochess-lovat.vercel.app/about
+- ChessStream Africa: https://chessstream-africa.vercel.app

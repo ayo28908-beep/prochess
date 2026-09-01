@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout";
 import { Footer } from "@/components/layout";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "sonner";
+import { LocalBusinessJsonLd, OrganizationJsonLd } from "@/components/JsonLd";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,6 +34,7 @@ export const metadata: Metadata = {
     "Prochess",
     "Ibadan",
   ],
+  metadataBase: new URL("https://prochess-lovat.vercel.app"),
   openGraph: {
     title: "Prochess — Nigeria's Premier Chess Academy",
     description:
@@ -50,6 +52,17 @@ export const metadata: Metadata = {
       "Learn chess with Nigeria's best coaches. FIDE Infinite Chess Project partner.",
     images: ["/images/logo.png"],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -59,7 +72,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className="min-h-screen bg-white font-sans text-slate-900 antialiased">
+        <LocalBusinessJsonLd />
+        <OrganizationJsonLd />
         <AuthProvider>
           <Navbar />
           <main>{children}</main>
