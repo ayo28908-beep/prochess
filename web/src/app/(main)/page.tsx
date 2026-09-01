@@ -172,7 +172,7 @@ export default function HomePage() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  href="/live"
+                  href="https://chessstream-africa.vercel.app"
                   className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition-all hover:bg-white/20 active:scale-[0.98]"
                 >
                   Watch Live Games

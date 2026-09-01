@@ -180,7 +180,7 @@ export default function DashboardPage() {
           </Link>
         </Button>
         <Button asChild variant="outline" className="h-auto flex-col gap-2 py-6">
-          <Link href="/live">
+          <Link href="https://chessstream-africa.vercel.app">
             <Trophy className="h-6 w-6 text-[#D4AF37]" />
             <span className="text-sm">Live Games</span>
           </Link>
