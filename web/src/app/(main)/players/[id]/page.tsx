@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase/client";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,14 +11,17 @@ import { ArrowLeft, ExternalLink, MapPin, Star } from "lucide-react";
 import type { Profile } from "@/lib/types";
 
 export default function PlayerDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id as string;
   const [player, setPlayer] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!id) return;
     async function load() {
+      const supabase = getSupabaseClient();
       const { data } = await supabase.from("profiles").select("*").eq("id", id).single();
-      setPlayer(data);
+      setPlayer(data as Profile | null);
       setLoading(false);
     }
     load();
@@ -54,7 +57,6 @@ export default function PlayerDetailPage() {
         </Link>
       </Button>
 
-      {/* Profile card */}
       <Card className="border-slate-200">
         <CardContent className="flex items-start gap-6 p-6">
           <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-green-50">
@@ -92,7 +94,6 @@ export default function PlayerDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Stats placeholder — real data when available */}
       <div className="mt-6 grid grid-cols-3 gap-4">
         <Card className="border-slate-200">
           <CardContent className="p-4 text-center">

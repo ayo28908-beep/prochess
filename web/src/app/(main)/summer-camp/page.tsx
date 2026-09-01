@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase/client";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import { Calendar, MapPin, Phone, CheckCircle, Clock, Users } from "lucide-react";
 
 const benefits = [
@@ -40,7 +40,8 @@ export default function SummerCampPage() {
 
     const amount = form.weeks === "3" ? 20000 : form.weeks === "2" ? 14000 : 8000;
 
-    const { error } = await supabase.from("camp_registrations").insert({
+    const supabase = getSupabaseClient();
+    const { error } = await (supabase.from("camp_registrations") as any).insert({
       full_name: form.fullName,
       email: form.email,
       phone: form.phone,

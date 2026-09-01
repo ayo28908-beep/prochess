@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase/client";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,8 @@ import { Trophy, Calendar, MapPin, ArrowLeft, Users, Clock, CheckCircle, Externa
 import type { Tournament } from "@/lib/types";
 
 export default function TournamentDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id as string;
   const { user } = useAuth();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [registrations, setRegistrations] = useState(0);
@@ -24,20 +25,21 @@ export default function TournamentDetailPage() {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from("tournaments").select("*").eq("id", id).single();
+      const supabase = getSupabaseClient();
+      const { data } = await supabase.from("tournaments").select("*").eq("id", id).single() as any;
       setTournament(data);
 
       const { count } = await supabase
         .from("tournament_registrations")
         .select("*", { count: "exact", head: true })
-        .eq("tournament_id", id as string);
+        .eq("tournament_id", id);
       setRegistrations(count ?? 0);
 
       if (user) {
         const { data: reg } = await supabase
           .from("tournament_registrations")
           .select("id")
-          .eq("tournament_id", id as string)
+          .eq("tournament_id", id)
           .eq("user_id", user.id)
           .maybeSingle();
         setRegistered(!!reg);
@@ -49,14 +51,15 @@ export default function TournamentDetailPage() {
   }, [id, user]);
 
   const handleRegister = async () => {
+    const supabase = getSupabaseClient();
     if (!user) {
       toast.error("Please sign in to register");
       return;
     }
 
     setRegistering(true);
-    const { error } = await supabase.from("tournament_registrations").insert({
-      tournament_id: id as string,
+    const { error } = await (supabase.from("tournament_registrations") as any).insert({
+      tournament_id: id,
       user_id: user.id,
       section: "open",
       payment_status: "pending",

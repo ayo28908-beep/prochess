@@ -49,7 +49,7 @@ function DailyPuzzle() {
         .from("daily_puzzles")
         .select("puzzle(*)")
         .eq("date", new Date().toISOString().split("T")[0])
-        .maybeSingle();
+        .maybeSingle() as any;
 
       if (daily?.puzzle && !Array.isArray(daily.puzzle)) {
         const p = daily.puzzle as PuzzleType;
